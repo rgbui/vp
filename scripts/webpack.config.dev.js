@@ -18,7 +18,7 @@ var mode = process.argv.findIndex(x => x.indexOf('development') > -1) > -1 ? "de
 var reactCdnJS = mode == 'pro' ?
     `https://cdn.bootcdn.net/ajax/libs/react/0.0.0-0c756fb-f7f79fd/umd/react.production.min.js` :
     'https://cdn.bootcdn.net/ajax/libs/react/0.0.0-0c756fb-f7f79fd/umd/react.development.js';
-console.log(mode,reactCdnJS)
+console.log(mode, reactCdnJS)
 module.exports = {
     mode: 'development',
     entry: "./app/main.ts",
@@ -77,12 +77,16 @@ module.exports = {
                 ],
         },
         {
+            test: /svg\/[\w\-]+\.svg$/,
+            loader: 'raw-loader'
+        },
+        {
             test: /\.(gif|jpg|png|woff|svg|eot|ttf)\??.*$/,
             loader: 'url-loader?limit=8192&name=images/[hash:8].[name].[ext]'
         }]
     },
     externals: {
- 
+
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
