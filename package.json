@@ -1,0 +1,45 @@
+{
+  "name": "viewparse",
+  "version": "1.0.0",
+  "description": "viewparse designer",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack": "webpack --config scripts/webpack.config.js",
+    "webpack-dev": "webpack-dev-server  --env development  --config scripts/webpack.config.dev.js  --hot --progress --colors  "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rgbui/vp.git"
+  },
+  "keywords": [
+    "viewparse",
+    "vp"
+  ],
+  "author": "kanhai",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rgbui/vp/issues"
+  },
+  "homepage": "https://github.com/rgbui/vp#readme",
+  "dependencies": {
+    "vue": "^2.6.12",
+    "vue-router": "^3.4.8"
+  },
+  "devDependencies": {
+    "css-loader": "^5.0.0",
+    "html-webpack-plugin": "^4.5.0",
+    "less": "^3.12.2",
+    "less-loader": "^7.0.2",
+    "mini-css-extract-plugin": "^1.2.1",
+    "style-loader": "^2.0.0",
+    "ts-loader": "^8.0.7",
+    "typescript": "^4.0.5",
+    "url-loader": "^4.1.1",
+    "vue-loader": "^15.9.4",
+    "vue-template-compiler": "^2.6.12",
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  }
+}
