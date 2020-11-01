@@ -11,14 +11,7 @@ var mode = process.argv.findIndex(x => x.indexOf('development') > -1) > -1 ? "de
  * webpack url https://www.cnblogs.com/brandonhulala/p/6057378.html
  */
 
-/**
- * https://www.bootcdn.cn/react/16.14.0/
- * 
- */
-var reactCdnJS = mode == 'pro' ?
-    `https://cdn.bootcdn.net/ajax/libs/react/0.0.0-0c756fb-f7f79fd/umd/react.production.min.js` :
-    'https://cdn.bootcdn.net/ajax/libs/react/0.0.0-0c756fb-f7f79fd/umd/react.development.js';
-console.log(mode, reactCdnJS)
+
 module.exports = {
     mode: 'development',
     entry: "./app/main.ts",
@@ -97,7 +90,7 @@ module.exports = {
             hash: true,
             inject: 'body',
             templateParameters: {
-                reactCdnJS
+               
             }
         }),
         new VueLoaderPlugin(),
