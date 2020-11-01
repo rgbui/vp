@@ -5,11 +5,21 @@
         <a>火凤凰</a>
       </div>
       <div class="head-right">
-        <button>登陆</button>
-        <button>注册</button>
+        <a href="/login">登陆</a>
+        <a href="/reg">注册</a>
       </div>
     </div>
-    <div v-else-if="isLogin ? true : false"></div>
+    <div class="head-wrapper" v-else-if="isLogin ? true : false">
+      <div class="head-left">
+        <a>火凤凰</a>
+      </div>
+      <div class="head-right">
+        <a>
+          <img :src="user.face" v-if="user.face" />
+          <span v-else>{{ user.name.substring(0, 1) }}</span>
+        </a>
+      </div>
+    </div>
   </div>
 </template>
 <style lang='less'>
@@ -35,13 +45,23 @@
   }
 }
 </style>
-<script>
-export default {
+<script lang="ts">
+import Vue from "vue";
+import { user } from "../../user";
+export default Vue.extend({
   props: {
     isLogin: { type: Boolean, default: false },
+    user: { type: Object, default: null },
   },
   mounted() {
-    /**通过cookie去主动查询用户信息 */
+    user.getUserInfo((user) => {
+      if (user) {
+        this.isLogin = true;
+        this.user = user;
+      } else {
+        this.isLogin = false;
+      }
+    });
   },
-};
+});
 </script>
