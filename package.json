@@ -4,7 +4,8 @@
   "description": "viewparse designer",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "webpack && serverless-deploy",
+    "serverless-deploy": "fun deploy -t ../vp-serverless/template.yml -y",
     "webpack": "webpack --config scripts/webpack.config.prod.js",
     "webpack-dev": "webpack-dev-server  --env development  --config scripts/webpack.config.dev.js  --hot --progress --colors  "
   },

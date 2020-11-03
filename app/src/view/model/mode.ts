@@ -7,5 +7,5 @@ export class Mode {
         this.props = props;
         this.view = view;
     }
-    props:Prop[] = [];
+    props: Prop[] = [];
 }

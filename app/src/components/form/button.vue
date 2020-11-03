@@ -24,9 +24,10 @@
   }
 }
 </style>
-<script>
+<script lang="ts">
+import Vue from "vue";
 import VpIcon from "../layout/icon.vue";
-export default {
+export default Vue.extend({
   props: {
     disabled: { type: Boolean, default: false },
     size: { type: String, default: "default" },
@@ -35,5 +36,5 @@ export default {
     loading: { type: Boolean, default: false },
     loadingTip: { type: String, default: "加载中" },
   },
-};
+});
 </script>
