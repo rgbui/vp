@@ -21,10 +21,10 @@ const routes = [
     },
     {
         path: "/reg",
-        component: reg
+        component: login
     },
     {
-        path: '/page/:id',
+        path: '/view/:id',
         component: page
     }
 ]

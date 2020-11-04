@@ -10,7 +10,8 @@ var mode = process.argv.findIndex(x => x.indexOf('development') > -1) > -1 ? "de
 /**
  * webpack url https://www.cnblogs.com/brandonhulala/p/6057378.html
  */
-
+const PUB_HOST = 'http://api.viewparse.com';
+const DEV_HOST = 'http://api.viewparse.com';
 var outputDir = path.join(__dirname, "../../vp-serverless/vp-org/site");
 module.exports = {
     mode: 'production',
@@ -79,8 +80,11 @@ module.exports = {
             hash: true,
             inject: 'body',
             templateParameters: {
-                
+
             }
+        }),
+        new webpack.DefinePlugin({
+            HOST: process.env.NODE_ENV === 'production' ? PUB_HOST : DEV_HOST
         }),
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin({ filename: "assert/css/style.css" })

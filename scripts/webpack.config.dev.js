@@ -1,5 +1,5 @@
 const path = require("path");
-const webpack = require('webpack')
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -11,6 +11,8 @@ var mode = process.argv.findIndex(x => x.indexOf('development') > -1) > -1 ? "de
  * webpack url https://www.cnblogs.com/brandonhulala/p/6057378.html
  */
 
+const PUB_HOST = 'http://api.viewparse.com';
+const DEV_HOST = 'http://api.viewparse.com';
 
 module.exports = {
     mode: 'development',
@@ -90,8 +92,11 @@ module.exports = {
             hash: true,
             inject: 'body',
             templateParameters: {
-               
+
             }
+        }),
+        new webpack.DefinePlugin({
+            HOST: process.env.NODE_ENV === 'production' ? PUB_HOST : DEV_HOST
         }),
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin({ filename: "assert/css/style.css" })

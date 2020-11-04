@@ -1,7 +1,8 @@
 import Axios from "axios";
-import { Events } from "./src/util/events";
+import { Events } from "./util/events";
 
 const INNER_GETUSER = '__inner_get_user_info';
+const LOCAL_USER_KEY = 'user_info';
 class User extends Events {
     private user: {
         id: string,
@@ -19,10 +20,20 @@ class User extends Events {
         Axios.post('/get/user/loginfo').then(res => {
             this.isTryLogined = true;
             if (res && res.data && res.data.success == true) {
-                this.user = res.data.user;
-                this.emit('getUserInfo', this.userInfo);
-                this.emit(INNER_GETUSER, this.userInfo);
-                this.off(INNER_GETUSER);
+                if (res.data.session == true) {
+                    //从当前的缓存取
+                    this.user = JSON.parse(window.localStorage.getItem(LOCAL_USER_KEY));
+                    this.emit('getUserInfo', this.userInfo);
+                    this.emit(INNER_GETUSER, this.userInfo);
+                    this.off(INNER_GETUSER);
+                }
+                else if (res.data.user) {
+                    this.user = res.data.user;
+                    window.localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(this.user));
+                    this.emit('getUserInfo', this.userInfo);
+                    this.emit(INNER_GETUSER, this.userInfo);
+                    this.off(INNER_GETUSER);
+                }
             }
             else {
                 this.emit('nologin');
