@@ -1,0 +1,68 @@
+* {
+    margin     : 0px;
+    border     : 0px;
+    padding    : 0px;
+    font-family: "helvetica neue", arial, sans-serif;
+    font-size  : 14px;
+    outline: none;
+}
+
+[v-cloak] {
+    display: none !important;
+}
+
+::-webkit-scrollbar {
+    width           : 7px;
+    height          : 7px;
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: transparent;
+}
+
+:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(200, 200, 200, .4);
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-track-piece {
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-corner {
+    background-color: transparent;
+}
+
+
+
+@media screen and (max-width:1275px) {
+    .page-width {
+        width: 996px
+    }
+}
+
+@media screen and (min-width:1276px) and (max-width:1528px) {
+    .page-width {
+        width: 1248px
+    }
+}
+
+@media screen and (min-width:1529px) {
+    .page-width {
+        width: 1500px
+    }
+}
+
+.page-cover {
+    position  : fixed;
+    top       : 0px;
+    left      : 0px;
+    width     : 100vw;
+    height    : 100vh;
+    background: rgba(0, 0, 0, .3);
+    z-index   : 99998;
+}

@@ -1,8 +1,9 @@
 import Vue from 'vue';
 import App from './app.vue';
 import Axios from "axios";
-import "./style/theme.less";
-import "./style/base.less";
+import "./assert/style/theme.less";
+import "./assert/style/base.less";
+import "./util/array";
 // 引入路由
 import router from "./router";   // import router 的router 一定要小写， 不要写成Router, 否则报 can't match的报错
 import { user } from './user';
