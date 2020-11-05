@@ -1,5 +1,7 @@
 <template>
-  <div class="viewparse"><router-view></router-view></div>
+  <div class="vb-image">
+    <img />
+  </div>
 </template>
 <script lang="ts">
 import Vue from "vue";

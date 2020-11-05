@@ -1,4 +1,4 @@
-
+import * as short from 'short-uuid';
 export var util = {
     inherit(Mix, ...mixins) {
         function copyProperties(target, source) {
@@ -17,5 +17,8 @@ export var util = {
             copyProperties(Mix.prototype, mixin.prototype);
         }
         return Mix;
+    },
+    guid() {
+        return short.generate();
     }
 }

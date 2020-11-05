@@ -1,7 +1,7 @@
 
 
-export class Sln{
-    constructor(el:HTMLElement){
-
+export class Sln {
+    constructor(el: HTMLElement) {
+         
     }
 }

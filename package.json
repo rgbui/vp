@@ -25,6 +25,8 @@
   "homepage": "https://github.com/rgbui/vp#readme",
   "dependencies": {
     "axios": "^0.21.0",
+    "short-uuid": "^4.1.0",
+    "uuid": "^8.3.1",
     "vue": "^2.6.12",
     "vue-router": "^3.4.8"
   },

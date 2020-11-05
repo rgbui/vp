@@ -1,7 +1,7 @@
 
 
 <template>
-    <div class="viewparse-designer"></div>
+  <div class="viewparse-designer"></div>
 </template>
 <script lang="ts">
 import Vue from "vue";
