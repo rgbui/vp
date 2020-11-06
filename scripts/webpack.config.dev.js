@@ -11,8 +11,8 @@ var mode = process.argv.findIndex(x => x.indexOf('development') > -1) > -1 ? "de
  * webpack url https://www.cnblogs.com/brandonhulala/p/6057378.html
  */
 
-const PUB_HOST = 'http://api.viewparse.com';
-const DEV_HOST = 'http://api.viewparse.com';
+const PUB_HOST = 'http://test-api.viewparse.com';
+const DEV_HOST = 'http://test-api.viewparse.com';
 
 module.exports = {
     mode: 'development',

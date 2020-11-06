@@ -1,10 +1,7 @@
 
 import { Events } from "../../util/events";
-
 import Vue from "vue";
-
 import login from './login.view.vue';
-
 export class LoginDialoug extends Events {
     constructor() {
         super();
