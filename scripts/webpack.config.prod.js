@@ -28,7 +28,11 @@ module.exports = {
         rules: [{
             test: /\.tsx?$/,
             loader: "ts-loader",
-            options: { appendTsSuffixTo: [/\.vue$/] }
+            options: {
+                appendTsSuffixTo: [/\.vue$/],
+                onlyCompileBundledFiles: true,
+                // 加这句
+            }
         },
         //  使用vue-loader 加载 .vue 结尾的文件
         {
@@ -88,7 +92,6 @@ module.exports = {
 
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin(),
         new HtmlWebpackPlugin({
             template: path.join(__dirname, "../index.html"), // 婧愭ā鏉挎枃浠�
             filename: './index.html', // 杈撳嚭鏂囦欢銆愭敞鎰忥細杩欓噷鐨勬牴璺緞鏄痬odule.exports.output.path銆�
@@ -100,7 +103,7 @@ module.exports = {
             }
         }),
         new webpack.DefinePlugin({
-            HOST: process.env.NODE_ENV === 'production' ? PUB_HOST : DEV_HOST
+            HOST: JSON.stringify(process.env.NODE_ENV === 'production' ? PUB_HOST : DEV_HOST)
         }),
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin({ filename: "assert/css/style.css" })

@@ -3,6 +3,7 @@ declare module "*.vue" {
   export default Vue
 }
 
+declare var HOST:string;
 
 declare interface Window {
   importVpIcon(type: string, name: string): string;

@@ -7,7 +7,8 @@ import "./util/array";
 // 引入路由
 import router from "./router";   // import router 的router 一定要小写， 不要写成Router, 否则报 can't match的报错
 import { user } from './user';
-Axios.defaults.baseURL = 'http://api.viewparse.com';
+
+Axios.defaults.baseURL = HOST;
 Axios.defaults.withCredentials = true;
 var div = document.body.appendChild(document.createElement('div'));
 new Vue({
