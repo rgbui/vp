@@ -17,19 +17,31 @@ class User extends Events {
         else return undefined;
     }
     tryLogin(callback?) {
+        var data = window.localStorage.getItem(LOCAL_USER_KEY);
+        if (data) {
+            var dj = JSON.parse(data);
+            this.user = dj.user;
+            if ((new Date().getTime() - dj.date) < 1000 * 60 * 60 * 2) {
+                this.emit('getUserInfo', this.userInfo);
+                this.emit(INNER_GETUSER, this.userInfo);
+                this.off(INNER_GETUSER);
+                if (typeof callback == 'function') callback(this.user);
+                return;
+            }
+        }
         Axios.post('/get/user/loginfo').then(res => {
             this.isTryLogined = true;
             if (res && res.data && res.data.success == true) {
                 if (res.data.session == true) {
                     //从当前的缓存取
-                    this.user = JSON.parse(window.localStorage.getItem(LOCAL_USER_KEY));
+                    this.user = JSON.parse(window.localStorage.getItem(LOCAL_USER_KEY)).user;
                     this.emit('getUserInfo', this.userInfo);
                     this.emit(INNER_GETUSER, this.userInfo);
                     this.off(INNER_GETUSER);
                 }
                 else if (res.data.user) {
                     this.user = res.data.user;
-                    window.localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(this.user));
+                    window.localStorage.setItem(LOCAL_USER_KEY, JSON.stringify({ date: new Date().getTime(), user: this.user }));
                     this.emit('getUserInfo', this.userInfo);
                     this.emit(INNER_GETUSER, this.userInfo);
                     this.off(INNER_GETUSER);
@@ -56,6 +68,10 @@ class User extends Events {
         else {
             this.on(INNER_GETUSER, callback);
         }
+    }
+    saveCache(userinfo) {
+        this.user = userinfo;
+        window.localStorage.setItem(LOCAL_USER_KEY, JSON.stringify({ date: new Date().getTime(), user: userinfo }));
     }
 }
 export var user = new User();

@@ -12,6 +12,10 @@ const routes = [
         component: index
     },
     {
+        path: '/designer',
+        component: page
+    },
+    {
         path: '/view/:id',
         component: page
     }

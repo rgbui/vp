@@ -1,5 +1,5 @@
 
-import { Sln } from "./solution/sln";
+import { Sln } from "./workspace/sln";
 export function renderLayout(vm) {
-    var sln = new Sln(vm.refs.tree as HTMLElement);
+    var sln = new Sln(vm.$refs.tree as HTMLElement);
 }

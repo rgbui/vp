@@ -14,7 +14,7 @@ import Vue from "vue";
 import { renderLayout } from "./layout";
 export default Vue.extend({
   mounted() {
-       renderLayout(this);
-  }
+    renderLayout(this);
+  },
 });
 </script>

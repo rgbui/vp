@@ -30,10 +30,15 @@ module.exports = {
         compress: true,
         hot: true,
         port: 8080,
-        open: true
+        open: true,
+        historyApiFallback: {
+            rewrites: [
+                { from: /\.*/, to: '/index.html' }
+            ]
+        }
     },
     resolve: {
-        extensions: ['.vue',".ts", ".js", ".less", ".css"]
+        extensions: ['.vue', ".ts", ".js", ".less", ".css"]
     },
     module: {
         rules: [{
@@ -106,7 +111,7 @@ module.exports = {
             }
         }),
         new webpack.DefinePlugin({
-            HOST: process.env.NODE_ENV === 'production' ? PUB_HOST : DEV_HOST
+            HOST: JSON.stringify(process.env.NODE_ENV === 'production' ? PUB_HOST : DEV_HOST)
         }),
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin({ filename: "assert/css/style.css" })

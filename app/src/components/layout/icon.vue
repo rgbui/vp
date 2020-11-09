@@ -4,10 +4,10 @@
     class="vp-icon"
     :class="[disabled ? 'vp-icon-disabled' : '']"
     v-html="icon_html"
-    ><slot></slot
-  ></i>
+    ><slot></slot></i>
 </template>
 <script lang="ts">
+///<reference path='../../../../declare.d.ts'/>
 import Vue from "vue";
 export default Vue.extend({
   props: {
