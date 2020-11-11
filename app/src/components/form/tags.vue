@@ -11,13 +11,25 @@
     <input
       type="text"
       ref="input"
-      v-if="editable ? true : false"
+      v-if="readonly ? false : true"
       @keyup.enter="enter"
       @keydown.backspace="backspace"
     />
   </div>
 </template>
 <script lang="ts">
-import Vue from "vue";
-export default Vue.extend({});
+import Vue, { PropType } from "vue";
+export default Vue.extend({
+  props: {
+    disabled: { type: Boolean, default: false },
+    readonly: { type: Boolean, default: false },
+    tags: { type: Array as PropType<string[]>, default: [] },
+  },
+  methods: {
+    enter() {},
+    backspace() {},
+    focus() {},
+    remove(at: number) {},
+  },
+});
 </script>

@@ -67,7 +67,15 @@ module.exports = {
                         },
                     },
                     'css-loader',
-                    'less-loader'
+                    'less-loader',
+                    {
+                        loader: 'sass-resources-loader',
+                        options: {
+                            resources: [
+                                path.resolve(__dirname, "../app/assert/style/theme.less")
+                            ]
+                        }
+                    }
                 ],
         },
         {
@@ -103,7 +111,8 @@ module.exports = {
             }
         }),
         new webpack.DefinePlugin({
-            HOST: JSON.stringify(process.env.NODE_ENV === 'production' ? PUB_HOST : DEV_HOST)
+            HOST: JSON.stringify(process.env.NODE_ENV === 'production' ? PUB_HOST : DEV_HOST),
+            MODE: JSON.stringify('production')
         }),
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin({ filename: "assert/css/style.css" })

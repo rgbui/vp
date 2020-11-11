@@ -1,10 +1,11 @@
 <template>
-  <i
+  <span
     :title="title"
     class="vp-icon"
     :class="[disabled ? 'vp-icon-disabled' : '']"
     v-html="icon_html"
-    ><slot></slot></i>
+    ><slot></slot
+  ></span>
 </template>
 <script lang="ts">
 ///<reference path='../../../../declare.d.ts'/>
@@ -65,7 +66,7 @@ export default Vue.extend({
       };
       var prefix = map[type as any] as any;
       if (typeof prefix == "string")
-        return `<s class='${prefix} ${prefix}-${name}'></s>`;
+        return `<span class='${prefix} ${prefix}-${name}'></span>`;
       else {
         if (typeof window.importVpIcon == "function") {
           return window.importVpIcon(type, name);

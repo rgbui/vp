@@ -1,16 +1,16 @@
 <template>
   <div class="vp-box">
     <div class="vp-box-head">
-        <slot name='head'>
-       <VpIcon :icon="icon"></VpIcon>
-<span>{{text}}</span>
-        <slot>
+      <slot name="head">
+        <VpIcon :icon="icon"></VpIcon>
+        <span>{{ text }}</span>
+      </slot>
     </div>
     <div class="vp-box-operators">
-         <slot name='operators'><slot>
+      <slot name="operators"></slot>
     </div>
-    <div class="vp-box-content" v-if='spread'>
-        <slot></slot>
+    <div class="vp-box-content" v-if="spread">
+      <slot></slot>
     </div>
   </div>
 </template>

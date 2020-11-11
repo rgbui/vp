@@ -4,9 +4,10 @@ import VueRouter from "vue-router";
 // 引入组件
 import index from "./site/index.vue";
 import page from "./src/index.vue";
+import testComponent from "./test/component.vue";
 // 要告诉 vue 使用 vueRouter
 Vue.use(VueRouter);
-const routes = [
+let routes = [
     {
         path: "/",
         component: index
@@ -19,7 +20,15 @@ const routes = [
         path: '/view/:id',
         component: page
     }
-]
+];
+if (MODE == 'dev') {
+    routes.push(
+        {
+            path: '/test/component',
+            component: testComponent
+        }
+    )
+}
 var router = new VueRouter({
     mode: 'history',
     routes

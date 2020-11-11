@@ -14,26 +14,29 @@ var mode = process.argv.findIndex(x => x.indexOf('development') > -1) > -1 ? "de
 const PUB_HOST = 'http://test-api.viewparse.com';
 const DEV_HOST = 'http://test-api.viewparse.com';
 
+let port = 8080;
+let publicPath = `http://localhost:${port}/`;
 module.exports = {
     mode: 'development',
     entry: "./app/main.ts",
     output: {
         path: path.resolve(__dirname, "../dist"),
-        filename: "assert/js/bundle.js"
+        filename: "assert/js/bundle.js",
+        publicPath
     },
     devServer: {
         //璁剧疆鍩烘湰鐩綍缁撴瀯
-        contentBase: path.resolve(__dirname, 'dist'),
+        contentBase: path.resolve(__dirname, '../dist'),
         //鏈嶅姟鍣ㄧ殑IP鍦板潃锛屽彲浠ヤ娇鐢↖P涔熷彲浠ヤ娇鐢╨ocalhost
         host: 'localhost',
         //鏈嶅姟绔帇缂╂槸鍚﹀紑鍚�
         compress: true,
         hot: true,
-        port: 8080,
+        port: port,
         open: true,
         historyApiFallback: {
             rewrites: [
-                { from: /\.*/, to: '/index.html' }
+                { from: /^[a-zA-Z\d\/]+$/, to: '/index.html' }
             ]
         }
     },
@@ -79,7 +82,15 @@ module.exports = {
                         }
                     },
                     'css-loader',
-                    'less-loader'
+                    'less-loader',
+                    {
+                        loader: 'sass-resources-loader',
+                        options: {
+                            resources: [
+                                path.resolve(__dirname, "../app/assert/style/theme.less")
+                            ]
+                        }
+                    }
                 ],
         },
         {
@@ -107,13 +118,17 @@ module.exports = {
             hash: true,
             inject: 'body',
             templateParameters: {
-
+                publicPath
             }
         }),
         new webpack.DefinePlugin({
-            HOST: JSON.stringify(process.env.NODE_ENV === 'production' ? PUB_HOST : DEV_HOST)
+            HOST: JSON.stringify(process.env.NODE_ENV === 'production' ? PUB_HOST : DEV_HOST),
+            MODE: JSON.stringify('dev')
         }),
         new VueLoaderPlugin(),
-        new MiniCssExtractPlugin({ filename: "assert/css/style.css" })
+        new MiniCssExtractPlugin({
+            filename: "assert/css/style.css",
+            publicPath
+        })
     ]
 };
