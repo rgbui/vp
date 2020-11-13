@@ -1,14 +1,20 @@
+import "./util/array";
 import Vue from 'vue';
 import App from './app.vue';
 import Axios from "axios";
 import "./assert/style/theme.less";
 import "./assert/style/base.less";
-import "./util/array";
 // 引入路由
 import router from "./router";   // import router 的router 一定要小写， 不要写成Router, 否则报 can't match的报错
 import { user } from './user';
 import "./src/components/declare.components";
-Vue.config.silent = true
+Vue.config.silent = true;
+// 可以使用 `v-on:keyup.f1`
+Vue.config.keyCodes.backspace = 8;
+Vue.config.keyCodes.del = 46;
+Vue.config.keyCodes.space=32;
+Vue.config.keyCodes.esc=27;
+
 Axios.defaults.baseURL = HOST;
 Axios.defaults.withCredentials = true;
 var div = document.body.appendChild(document.createElement('div'));

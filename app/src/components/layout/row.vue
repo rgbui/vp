@@ -22,7 +22,7 @@ export default Vue.extend({
       var gap = this.getDefault(
         this.panel ? this.panel.rowGap : undefined,
         this.rowGap,
-        10
+       6
       );
       style.marginTop = gap + "px";
       style.marginBottom = gap + "px";
@@ -60,7 +60,7 @@ export default Vue.extend({
       var gap = this.getDefault(
         this.panel ? this.panel.rowGap : undefined,
         this.rowGap,
-        10
+        6
       );
       style.marginTop = gap + "px";
       style.marginBottom = gap + "px";
@@ -68,7 +68,7 @@ export default Vue.extend({
         this.getDefault(
           this.panel ? this.panel.labelWidth : undefined,
           this.labelWidth,
-          160
+          120
         ) + "px";
       style.justifyContent = "flex-start;";
       var align = this.getDefault(
@@ -120,6 +120,7 @@ export default Vue.extend({
 .vp-label {
    flex-shrink: 0;
    min-height: 22px;
+   box-sizing: border-box;
 }
 .vp-row-label > .vp-row {
   flex-grow: 1;

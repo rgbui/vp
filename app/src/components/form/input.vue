@@ -6,6 +6,7 @@
       {
         'vp-input-disabled': disabled,
         'vp-input-focus': isFocus,
+        'vp-select-line': block == false,
       },
     ]"
   >
@@ -55,6 +56,7 @@
 import Vue, { PropType } from "vue";
 export default Vue.extend({
   props: {
+    block: { type: Boolean, default: true },
     disabled: { type: Boolean, default: false },
     placeholder: { type: String, default: "" },
     value: { type: String, default: "" },
@@ -190,7 +192,7 @@ export default Vue.extend({
   &-focus {
     textarea,
     input {
-        border: 1px solid @primary-color !important;
+      border: 1px solid @primary-color !important;
     }
     .vp-input-prepend,
     .vp-input-append {
@@ -209,6 +211,10 @@ export default Vue.extend({
     .vp-input-append {
       color: @text-color-disabled;
     }
+  }
+  &-line {
+    width: auto;
+    margin-right: @gap;
   }
 }
 </style>

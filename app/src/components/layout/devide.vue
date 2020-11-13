@@ -23,7 +23,7 @@ export default Vue.extend({
 <style lang="less">
 .vp-devide {
   position: relative;
-  height: 20px;
+  height: 10px;
   &::after {
     content: "\20";
     position: absolute;
@@ -33,6 +33,7 @@ export default Vue.extend({
     right: 0px;
     transform: translate(0, 50%);
     height: 1px;
+    background-color: @grey-border-3x;
   }
   display: flex;
   justify-content: center;

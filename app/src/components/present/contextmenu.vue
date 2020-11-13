@@ -1,82 +1,95 @@
 <template>
-  <ol :style="style">
-    <li
-      v-for="(item, index) in menus"
-      :key="item.name || index"
-      @mouseleave="mouseleave(item, $event)"
-      @mouseenter="mouseenter(item, $event)"
-    >
-      <a v-if="item.type == 'text' || (item.type ? false : true)">
-        <i><VpIcon v-if="item.icon ? true : false" :icon="item.icon" /></i>
-        <span>{{ item.text }}</span>
-        <label v-if="item.label ? true : false">{{ item.label }}</label>
-        <em v-if="item.childs && item.childs.length > 0"></em>
-      </a>
-      <a v-else-if="item.type == 'sp'" class="vp-contextmenu-sp"> </a>
-      <a v-else-if="item.type == 'check'">
-        <i
-          ><VpIcon
-            :icon="item.value == true ? 'check:font' : 'uncheck:font'"
-          ></VpIcon
-        ></i>
-        <span>{{ item.text }}</span>
-        <label v-if="item.label ? true : false">{{ item.label }}</label>
-        <em v-if="item.childs && item.childs.length > 0"></em>
-      </a>
-      <a v-else-if="item.type == 'input'">
-        <input
-          type="text"
-          :placeholder="item.placeholder"
-          v-model="item.value"
-          @input="input(item, $event)"
-        />
-      </a>
-      <a v-else-if="item.type == 'html'">
-        <i></i>
-        <span v-html="item.value"></span>
-      </a>
-      <vp-contextmenu
-        :menus="item.childs"
-        v-if="item.childs && item.childs.length > 0"
-        :deep="deep + 1"
-      ></vp-contextmenu>
-    </li>
-  </ol>
+  <div
+    class="vp-contextmenu"
+    tabindex="1"
+    @focusin="focus"
+    @focusout="blur"
+    v-show="show"
+    :style="style"
+  >
+    <vp-contextmenu-box :menus="menus"></vp-contextmenu-box>
+  </div>
 </template>
 <script lang="ts">
 import Vue, { PropType } from "vue";
-import VpIcon from "../layout/icon.vue";
+import { ContextmenuItem } from "./contextmenu.single";
 export default Vue.extend({
   name: "VpContextmenu",
   props: {
-    menus: {
-      type: Object as PropType<
-        {
-          name?: string;
-          icon?: string;
-          text?: string;
-          type?: "text" | "html" | "sp" | "checked" | "input";
-          disabled?: boolean;
-          label?: string;
-        }[]
-      >,
-      default: [],
-    },
-    deep: {
-      type: Number,
-      default: 0,
-    },
+    menus: { type: Array as PropType<ContextmenuItem> },
+    itemWidth: { type: Number, default: 180 },
+  },
+  data() {
+    return {
+      show: false,
+      top: 0,
+      left: 0,
+      isFocus: false,
+    };
   },
   computed: {
     style() {
-      return {};
+      var style: Record<string, any> = {};
+      style.top = this.top + "px";
+      style.left = this.left + "px";
+      style.width = this.itemWidth + "px";
+      return style;
     },
   },
+  provide() {
+    return {
+      contextmenu: this,
+    };
+  },
   methods: {
-    input(item, event: FocusEvent) {},
-    mousedown(item, event: MouseEvent) {},
-    mouseleave(item, event: MouseEvent) {},
-    mouseenter(item, event: MouseEvent) {},
+    focus() {
+      this.isFocus = true;
+    },
+    blur(event: FocusEvent) {
+      if (
+        (this.$el as HTMLDivElement).contains(
+          event.relatedTarget as HTMLDivElement
+        )
+      )
+        return;
+      this.isFocus = false;
+      this.show = false;
+    },
+    open(menus, point: { x: number; y: number }) {
+      this.menus = menus;
+      this.top = point.y;
+      this.left = point.x;
+      this.show = true;
+      Vue.nextTick(() => {
+        (this.$el as HTMLInputElement).focus();
+        //主要是自动调整当前菜单的位置，尽可能的显示在屏幕中。
+        this.autoAdjustPosition();
+      });
+    },
+    autoAdjustPosition() {},
+    mousedown(item, event) {
+      this.show = false;
+      this.$emit("mousedown", { item, event });
+    },
+    input(item, event) {
+      this.show = false;
+      this.$emit("input", { item, event });
+    },
+    check(item, event) {
+      this.show = false;
+      this.$emit("check", { item, event });
+    },
   },
 });
 </script>
+<style lang="less">
+.vp-contextmenu {
+  min-width: 180px;
+  border-radius: @radius-2x;
+  background-color: @grey-background;
+  border: 1px solid @grey-border-2x;
+  box-shadow: @shadow;
+  padding: @gap-min 0px;
+  position: absolute;
+}
+</style>

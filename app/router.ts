@@ -7,7 +7,7 @@ import page from "./src/index.vue";
 import testComponent from "./test/component.vue";
 // 要告诉 vue 使用 vueRouter
 Vue.use(VueRouter);
-let routes = [
+let routes:any[] = [
     {
         path: "/",
         component: index

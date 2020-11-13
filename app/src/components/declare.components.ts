@@ -1,7 +1,6 @@
 
 import Vue from "vue";
 import Button from "./form/button.vue";
-import ButtonGroup from "./form/button.group.vue";
 import VpPanel from "./layout/panel.vue";
 import VpRow from "./layout/row.vue";
 import VpCol from "./layout/col.vue";
@@ -14,10 +13,20 @@ import VpInput from "./form/input.vue";
 import VpNumber from "./form/number.vue";
 import VpSwitch from "./form/switch.vue";
 import VpTags from "./form/tags.vue";
+import VpCheck from "./form/checkbox.vue";
+import VpCheckGroup from "./form/checkbox.group.vue";
+import VpSelectOptions from "./form/select.options.vue";
+import VpSelect from "./form/select.vue";
+import VpDialoug from "./layout/dialoug.vue";
+import VpProgress from "./form/progress.vue";
+import VpSlider from "./form/slider.vue";
+import VpContextmenu from "./present/contextmenu.vue";
+import VpContextmenuBox from "./present/contextmenu.box.vue";
+import VpTree from "./present/tree.vue";
+import VpTreeBox from "./present/tree.box.vue";
 
 Vue.component('VpButton', Button);
 Vue.component('VpPanel', VpPanel);
-Vue.component('VpButtonGroup', ButtonGroup);
 Vue.component('VpRow', VpRow);
 Vue.component('VpText', VpText);
 Vue.component('VpCol', VpCol);
@@ -30,3 +39,15 @@ Vue.component('VpInput', VpInput);
 Vue.component('VpNumber', VpNumber);
 Vue.component('VpSwitch', VpSwitch);
 Vue.component('VpTags', VpTags);
+Vue.component('VpCheck', VpCheck);
+Vue.component('VpCheckGroup', VpCheckGroup);
+Vue.component('VpSelectOptions', VpSelectOptions);
+Vue.component('VpSelect', VpSelect);
+Vue.component('VpDialoug', VpDialoug);
+Vue.component('VpProgress', VpProgress);
+Vue.component('VpSlider', VpSlider);
+Vue.component('VpContextmenuBox', VpContextmenuBox);
+Vue.component('VpContextmenu', VpContextmenu);
+Vue.component('VpTree', VpTree);
+Vue.component('VpTreeBox', VpTreeBox);
+

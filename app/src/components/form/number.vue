@@ -5,6 +5,7 @@
       {
         'vp-number-disabled': disabled,
         'vp-number-focus': isFocus,
+        'vp-number-line': block == false,
       },
     ]"
     tabindex="100"
@@ -28,12 +29,12 @@
     />
     <div class="vp-number-operator">
       <vp-icon
-        icon="caret-up:font"
+        icon="angle-up:font"
         class="vp-number-down"
         @click.native.stop="up"
       />
       <vp-icon
-        icon="caret-down:font"
+        icon="angle-down:font"
         class="vp-number-up"
         @click.native.stop="down"
       />
@@ -44,6 +45,7 @@
 import Vue from "vue";
 export default Vue.extend({
   props: {
+    block: { type: Boolean, default: true },
     default: { type: Number },
     disabled: { type: Boolean, default: false },
     placeholder: { type: String, default: "" },
@@ -200,7 +202,8 @@ export default Vue.extend({
     background-color: transparent;
     position: absolute;
     width: 16px;
-    height: 22px;
+    border-radius: @radius;
+    height: @height;
     top: 0px;
     right: 0px;
   }
@@ -242,7 +245,7 @@ export default Vue.extend({
     position: absolute;
     top: 0px;
     right: 16px;
-    height: 22px;
+    height: @height;
     padding-right: @gap-min;
     display: flex;
     justify-content: center;
@@ -263,6 +266,9 @@ export default Vue.extend({
     .vp-number-unit {
       color: @text-color-disabled;
     }
+  }
+  &-line {
+    margin-right: @gap;
   }
 }
 </style>

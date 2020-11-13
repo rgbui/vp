@@ -1,47 +1,26 @@
 <template>
-  <ol>
-    <li v-for="(item, index) in childs" :key="item.id || index">
-      <div
-        class="vp-tree-item"
-        :class="getItemClass(item)"
-        :style="getItemStyle(item)"
-        @contextmenu="contextmenu(item, $event)"
-      >
-        <i @click="clickSpread(item, $event)">
-          <VpIcon
-            :icon="item.spread == true ? 'angle-down:font' : 'angle-right:font'"
-            v-if="item.childs && item.childs.length > 0"
-          ></VpIcon>
-        </i>
-        <VpIcon :icon="item.icon" v-if="item.icon ? true : false"></VpIcon>
-        <span v-if="tree.editId != item.id">{{ item.text }}</span>
-        <input v-else type="text" v-model="item.text" />
-        <div class="vp-tree-item-operators">
-          <VpIcon
-            v-for="(op, at) in getOperators(item)"
-            :key="at"
-            :icon="op.icon"
-            @click.native="operatorClick(item, op)"
-          ></VpIcon>
-        </div>
-        <div class="vp-tree-item-message"></div>
-      </div>
-      <vp-tree
-        v-if="item.spread == true"
-        :childs="item.childs"
-        :deep="deep + 1"
-      ></vp-tree>
-    </li>
-  </ol>
+  <div class="vp-tree">
+    <vp-tree-box :childs="childs"></vp-tree-box>
+  </div>
 </template>
 <script lang="ts">
 import Vue, { PropType } from "vue";
+import { util } from "../../../util/util";
 export default Vue.extend({
   name: "VpTree",
-  inject: ["tree"],
   provide() {
-    if (this.deep == 0) return { tree: this };
-    else return {};
+    return { tree: this };
+  },
+  data() {
+    return {
+      focusIds: [],
+      errorIds: [],
+      editId: "",
+      editErrorMsg: "",
+      dragId: "",
+      dragOverId: "",
+      dragOverPos: "",
+    };
   },
   props: {
     childs: {
@@ -56,41 +35,140 @@ export default Vue.extend({
       >,
       default: [],
     },
-    deep: {
-      type: Number,
-      default: 0,
+    dragger: {
+      type: Boolean,
+      default: true,
     },
-    /***
-     * root props
-     */
-    focusIds: { type: Array as PropType<string[]>, default: [] },
-    errorIds: { type: Array as PropType<string[]>, default: [] },
-    editId: { type: String, default: "" },
-    editErrorMsg: { type: String, default: "" },
-  },
-  computed: {
-    style() {
-      return {};
+    validName: {
+      type: Function,
+    },
+    validInput: {
+      type: Function,
     },
   },
   methods: {
-    getOperators(item) {},
-    operatorClick(item, operator) {},
-    getItemStyle(item) {},
-    getItemClass(item) {
-      let classList: string[] = [];
-      if (this.tree && Array.isArray(this.tree.focusIds)) {
-        if (this.tree.focusIds.exists((x) => x == item.id)) {
-          classList.push("vp-item-focus");
-        }
-        if (this.tree.errorIds.exists((x) => x == item.id)) {
-          classList.push("vp-item-error");
-        }
-      }
-      return classList;
+    onEdit(node) {
+      this.editId = node.id;
     },
-    clickSpread(item, event: MouseEvent) {},
-    contextmenu(item, event: MouseEvent) {},
+    onFocus(node) {
+      this.focusIds = [node.id];
+    },
+    find(nodeId: string) {
+      if (Array.isArray(this.childs))
+        return this.childs.arrayJsonFind("childs", (x) => x.id == nodeId);
+    },
+    findParent(nodeId: string) {
+      if (this.childs.exists((x) => x.id == nodeId)) return null;
+      else
+        return this.childs.arrayJsonFind(
+          "childs",
+          (x) =>
+            Array.isArray(x.childs) && x.childs.exists((z) => z.id == nodeId)
+        );
+    },
+    findIndex(nodeId) {
+      var pa = this.findParent(nodeId);
+      if (pa) {
+        return pa.childs.findIndex((x) => x.id == nodeId);
+      } else return this.childs.findIndex((x) => x.id == nodeId);
+    },
+    remove(nodeId: string) {
+      var pa = this.findParent(nodeId);
+      var at = this.findIndex(nodeId);
+      var node = this.find(nodeId);
+      this.history("remove", {
+        parentId: pa ? pa.id : undefined,
+        at,
+        data: this.getNode(node),
+      });
+      if (Array.isArray(this.childs))
+        this.childs.arrayJsonRemove("childs", (x) => x.id == nodeId);
+    },
+    move(dragNode, toNode, pos: "prev" | "next" | "append") {
+      var pa = this.findParent(dragNode.id);
+      var at = this.findIndex(dragNode.id);
+      if (Array.isArray(this.childs))
+        this.childs.arrayJsonRemove("childs", (x) => x.id == dragNode.id);
+      if (pos == "prev" || pos == "next") {
+        var toPa = this.findParent(toNode);
+        var toAt = this.findIndex(toNode);
+        if (pos == "next") toAt += 1;
+        var toArray = toPa ? toPa.childs : this.childs;
+        toArray.insertAt(toAt, dragNode);
+        this.history("move", {
+          nodeId: dragNode.id,
+          from: { parentId: pa ? pa.id : undefined, at },
+          to: { parentId: toPa ? toPa.id : undefined, at: toAt },
+        });
+      } else {
+        if (!Array.isArray(toNode.childs)) this.$set(toNode, "childs", []);
+        toNode.childs.push(dragNode);
+        this.history("move", {
+          nodeId: dragNode.id,
+          from: { parentId: pa ? pa.id : undefined, at },
+          to: { parentId: toNode.id, at: toNode.childs.length },
+        });
+      }
+      this.$emit("move", { from: dragNode, to: toNode, pos });
+    },
+    create(newNode, toNode, pos: "prev" | "next" | "append") {
+      if (typeof newNode == "undefined") newNode = util.guid();
+      if (pos == "prev" || pos == "next") {
+        var toPa = this.findParent(toNode);
+        var toAt = this.findIndex(toNode);
+        if (pos == "next") toAt += 1;
+        var toArray = toPa ? toPa.childs : this.childs;
+        toArray.insertAt(toAt, newNode);
+        this.history("create", {
+          data: util.clone(newNode),
+          to: { parentId: toPa ? toPa.id : undefined, at: toAt },
+        });
+      } else {
+        if (!Array.isArray(toNode.childs)) this.$set(toNode, "childs", []);
+        toNode.childs.push(newNode);
+        this.history("create", {
+          data: util.clone(newNode),
+          to: { parentId: toNode.id, at: toNode.childs.length },
+        });
+      }
+    },
+    update(node, newNodeInfo) {
+      var oldValue: Record<string, any> = {};
+      var newValue: Record<string, any> = {};
+      for (var n in newNodeInfo) {
+        var ov = node[n];
+        var nv = newNodeInfo[n];
+        if (util.valueIsEqual(ov, nv)) continue;
+        node[n] = util.clone(newNodeInfo[n]);
+        oldValue[n] = ov;
+        newValue[n] = nv;
+      }
+      this.history("update", { nodeId: node.id, oldValue, newValue });
+      this.$emit("update", { node, update: newNodeInfo });
+    },
+    get() {
+      return this.childs.arrayJsonToArray("childs", (x) => {
+        var json = {};
+        for (var n in x) {
+          if (n == "childs") continue;
+          else json[n] = util.clone(x[n]);
+        }
+        return json;
+      });
+    },
+    getNode(node) {
+      return ([node] as any).arrayJsonToArray("childs", (x) => {
+        var json = {};
+        for (var n in x) {
+          if (n == "childs") continue;
+          else json[n] = util.clone(x[n]);
+        }
+        return json;
+      })[0];
+    },
+    history(command, data) {
+      this.$emit("history", { command, data });
+    },
   },
 });
 </script>

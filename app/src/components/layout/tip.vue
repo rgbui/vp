@@ -9,9 +9,10 @@
 }
 .vp-tip-box {
   position: fixed;
-  background-color: rgba(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.7);
   border-radius: 4px;
   color: #fff;
+  padding: 5px 10px;
   &-error {
   }
   &-warn {
@@ -50,25 +51,40 @@ class Tip {
     var bound = el.getBoundingClientRect();
     var boxBound = this.box.getBoundingClientRect();
     let top, left;
-    if (options.direction == "top") {
-      top = bound.top - gap - boxBound.height;
+    if (options.direction == "top" || options.direction == "bottom") {
       left = bound.left + bound.width / 2 - boxBound.width / 2;
-    } else if (options.direction == "bottom") {
-      top = bound.top + bound.height + gap;
-      left = bound.left + bound.width / 2 - boxBound.width / 2;
-    }
-    if (top < 0 || top + boxBound.height > window.innerHeight) {
-      if (top < 0) {
-        top = bound.top + bound.height + gap;
-      } else {
+      if (options.direction == "top") {
         top = bound.top - gap - boxBound.height;
+      } else if (options.direction == "bottom") {
+        top = bound.top + bound.height + gap;
+      }
+      if (top < 0 || top + boxBound.height > window.innerHeight) {
+        if (top < 0) {
+          top = bound.top + bound.height + gap;
+        } else {
+          top = bound.top - gap - boxBound.height;
+        }
+      }
+      if (left < 0 || left + boxBound.width > window.innerWidth) {
+        if (left < 0) left = 10;
+        else left = window.innerWidth - boxBound.width - 10;
+      }
+    } else if (options.direction == "left" || options.direction == "right") {
+      top = bound.top + bound.height / 2 - boxBound.height / 2;
+      if (options.direction == "left") {
+        left = bound.left - gap - boxBound.width;
+      } else if (options.direction == "right") {
+        left = bound.left + bound.width + gap;
+      }
+      if (left < 0 || left + boxBound.width > window.innerWidth) {
+        if (left < 0) left = bound.left + bound.width + gap;
+        else left = bound.top - gap - boxBound.width;
+      }
+      if (top < 0 || top + boxBound.height > window.innerHeight) {
+        if (top < 0) top = 20;
+        else top = window.innerHeight - boxBound.height - 10;
       }
     }
-    if (left < 0 || left + boxBound.width > window.innerWidth) {
-      if (left < 0) left = 10;
-      else left = window.innerWidth - boxBound.width - 10;
-    }
-
     this.box.style.top = top + "px";
     this.box.style.left = left + "px";
     this.box.style.opacity = "1";
@@ -95,12 +111,16 @@ export default Vue.extend({
   methods: {
     mouseenter() {
       this.timer = setTimeout(() => {
-        Tip.tip.open(this.$el, this.tip, {
-          direction: this.direction,
-          type: this.type,
-          gap: this.gap,
-        });
-      }, 2e3);
+        Tip.tip.open(
+          (this.$el as HTMLDivElement).children[0] as HTMLDivElement,
+          this.tip,
+          {
+            direction: this.direction,
+            type: this.type,
+            gap: this.gap,
+          }
+        );
+      }, 4e2);
     },
     mouseleave() {
       if (this.timer) {

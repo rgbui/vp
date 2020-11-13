@@ -21,3 +21,8 @@ export default Vue.extend({
   },
 });
 </script>
+<style lang="less">
+.vp-panel{
+  color:@text-color;
+}
+</style>

@@ -15,15 +15,17 @@
 
 @grey : #fff;
 
-@grey-background    : #f6f6f6;
-@grey-background-2x : #e5e5e5;
+@grey-background    : rgb(236, 236, 236);
+@grey-background-2x : rgb(229, 229, 229);
 @grey-background-3x : #959595;
 @grey-background-4x : #8C8C8C;
 @grey-background-5x : #737373;
+@grey-background-6x : rgba(0, 0, 0, .25);
 
-@grey-border   : #cfcfcf;
-@grey-border-2x: #c8c8c8;
-@grey-border-3x: #b1b1b1;
+@grey-border    : rgb(229, 229, 229);
+@grey-border-2x : #cfcfcf;
+@grey-border-3x : #c8c8c8;
+@grey-border-4x : #b1b1b1;
 
 
 @grey-fill    : linear-gradient(#F5F4F5, #F6F6F6);
@@ -45,6 +47,7 @@
 /**元素间距*/
 @gap      : 10px;
 @gap-min  : 5px;
+@gap-max  : 20px;
 @gap-space: 3px;
 /**一般表单元素的高度**/
 @height   : 22px;
@@ -52,6 +55,7 @@
 //Text Color
 @text-color           : fade(#000, 87%);
 @text-color-secondary : fade(#000, 54%);
+@text-color-2x        : @text-color-secondary;
 @text-color-disabled  : fade(#000, 38%);
 
 // @text-color           : fade(#fff, 100%);
