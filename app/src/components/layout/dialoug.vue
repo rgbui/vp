@@ -34,7 +34,7 @@
     box-shadow: @shadow;
     border-radius: @radius-2x;
     width: 600px;
-    height: 400px;
+    max-height: 400px;
     background-color: @grey-background;
     &-head {
       height: 29px;

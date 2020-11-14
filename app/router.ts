@@ -4,28 +4,27 @@ import VueRouter from "vue-router";
 // 引入组件
 import index from "./site/index.vue";
 import page from "./src/index.vue";
-import testComponent from "./test/component.vue";
+
 // 要告诉 vue 使用 vueRouter
 Vue.use(VueRouter);
-let routes:any[] = [
+let routes: any[] = [
     {
+        name: 'index',
         path: "/",
         component: index
     },
     {
+        name: 'designer',
         path: '/designer',
-        component: page
-    },
-    {
-        path: '/view/:id',
         component: page
     }
 ];
 if (MODE == 'dev') {
     routes.push(
         {
+            name: 'test',
             path: '/test/component',
-            component: testComponent
+            component: () => import('./test/component.vue')
         }
     )
 }

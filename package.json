@@ -4,7 +4,8 @@
   "description": "viewparse designer",
   "main": "dist/index.js",
   "scripts": {
-    "deploy": "npm run webpack && npm run  serverless-deploy",
+    "deploy": "npm run serverless-ts && npm run webpack && npm run  serverless-deploy",
+    "serverless-ts": "tsc -p ../vp-serverless/vp-org/api/src-ts/tsconfig.json",
     "serverless-deploy": "fun deploy -t ../vp-serverless/template.yml -y",
     "webpack": "webpack --config scripts/webpack.config.prod.js",
     "webpack-dev": "webpack-dev-server  --env development  --config scripts/webpack.config.dev.js  --hot --progress --colors  "
@@ -38,6 +39,7 @@
     "less": "^3.12.2",
     "less-loader": "^7.0.2",
     "mini-css-extract-plugin": "^1.2.1",
+    "optimize-css-assets-webpack-plugin": "^5.0.4",
     "raw-loader": "^4.0.2",
     "sass-resources-loader": "^2.1.1",
     "style-loader": "^2.0.0",

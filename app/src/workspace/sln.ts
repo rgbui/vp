@@ -9,10 +9,13 @@ export class Sln extends Events {
         var self = this;
         this.vm = new Vue({
             el: el.appendChild(document.createElement('div')),
-            render:(h)=>h(VpTree,{ ref: 'tree' }),
+            render: (h) => h(VpTree, { ref: 'tree' }),
             mounted() {
                 self.tree = this.$refs.tree;
             }
         })
+    }
+    load(data) {
+
     }
 }

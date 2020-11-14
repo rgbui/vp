@@ -12,8 +12,8 @@ Vue.config.silent = true;
 // 可以使用 `v-on:keyup.f1`
 Vue.config.keyCodes.backspace = 8;
 Vue.config.keyCodes.del = 46;
-Vue.config.keyCodes.space=32;
-Vue.config.keyCodes.esc=27;
+Vue.config.keyCodes.space = 32;
+Vue.config.keyCodes.esc = 27;
 
 Axios.defaults.baseURL = HOST;
 Axios.defaults.withCredentials = true;
@@ -21,10 +21,24 @@ var div = document.body.appendChild(document.createElement('div'));
 new Vue({
     el: div,
     router,  // 注入到根实例中
-    render: h => h(App)
-});
-user.tryLogin(() => {
-    if (user.userInfo) {
-        //说明用户现在是登录状态，那么需要跳转相应的页面
+    render: h => h(App, { ref: 'app', props: { loading: true } }),
+    created() {
+        user.tryLogin(() => {
+            if (user.userInfo) {
+                //说明用户现在是登录状态，那么需要跳转相应的页面
+                //location.href = '/designer'
+                if (this.$router.currentRoute.name == 'index') {
+                    this.$router.push({ name: 'designer' });
+                }
+            }
+            if (this.app)
+                this.app.loading = false;
+        });
+    },
+    computed: {
+        app() {
+            return this.$refs.app;
+        }
     }
+
 });

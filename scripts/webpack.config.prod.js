@@ -5,6 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
 var mode = process.argv.findIndex(x => x.indexOf('development') > -1) > -1 ? "dev" : 'pro';
 /**
@@ -107,12 +108,20 @@ module.exports = {
             hash: true,
             inject: 'body',
             templateParameters: {
-
+                mode:'prod'
             }
         }),
         new webpack.DefinePlugin({
             HOST: JSON.stringify(process.env.NODE_ENV === 'production' ? PUB_HOST : DEV_HOST),
             MODE: JSON.stringify('production')
+        }),
+        new OptimizeCssAssetsPlugin({
+            assetNameRegExp: /\.css$/g,
+            cssProcessor: require("cssnano"),
+            cssProcessorPluginOptions: {
+                preset: ['default', { discardComments: { removeAll: true } }]
+            },
+            canPrint: true
         }),
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin({ filename: "assert/css/style.css" })
