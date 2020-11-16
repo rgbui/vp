@@ -62,6 +62,8 @@
 import Vue from "vue";
 import Axios from "axios";
 import { user } from "../../user";
+import { logger } from "../../logger";
+import { remote } from "../../util/remote";
 export default Vue.extend({
   props: {
     phone: { type: String, default: "" },
@@ -91,14 +93,16 @@ export default Vue.extend({
       this.loginError = "";
       if (this.disabled == true) return;
       this.disabled = true;
-      Axios.post("/user/phone/login", {
-        phoneNumber: this.phone,
-        pwd: this.password,
-      })
+      remote
+        .post("/user/phone/login", {
+          phoneNumber: this.phone,
+          pwd: this.password,
+        })
         .then((res) => {
           this.disabled = false;
-          if (res && res.data.success == true) {
-            user.saveCache(res.data.user);
+          if (res && res.success == true) {
+            user.saveCache(res.user);
+            if (res.token) remote.token = res.token;
             location.href = "/designer";
           } else this.loginError = "帐号或密码错误";
         })
@@ -127,10 +131,11 @@ export default Vue.extend({
         }
         if (this.disabled == true) return;
         this.disabled = true;
-        Axios.post("/search/phone", { phoneNumber: this.phone })
+        remote
+          .post("/search/phone", { phoneNumber: this.phone })
           .then((res) => {
             this.disabled = false;
-            if (res && res.data && res.data.success == true) {
+            if (res && res.success == true) {
               this.regError = "手机号已存在，请直接登录";
             } else this.regStep = 2;
           })
@@ -147,18 +152,21 @@ export default Vue.extend({
         }
         if (this.disabled == true) return;
         this.disabled = true;
-        Axios.post("/user/phone/reg", {
-          phoneNumber: this.phone,
-          phoneCode: this.code,
-        })
+        remote
+          .post("/user/phone/reg", {
+            phoneNumber: this.phone,
+            phoneCode: this.code,
+          })
           .then((r) => {
             this.disabled = false;
-            if (r && r.data && r.data.success == true) {
-              user.saveCache(r.data.user);
+            if (r && r.success == true) {
+              user.saveCache(r.user);
+              if (r.token) remote.token = r.token;
               this.regStep = 3;
             }
           })
           .catch((err) => {
+            logger.error(err, "/user/phone/reg happend error");
             this.disabled = false;
             this.regError = "网络异常";
           });
@@ -167,9 +175,12 @@ export default Vue.extend({
     getCode() {
       if (this.codeTime != -1) return;
       this.codeTime = 0;
-      Axios.post("/send/phone/code", { phoneNumber: this.phone })
+      this.getPhoneCodeText = `${120 - this.codeTime}s`;
+      remote
+        .post("/send/phone/code", { phoneNumber: this.phone })
         .then((r) => {})
         .catch((err) => {
+          logger.error(err, "/send/phone/code");
           this.regError = "网络异常，验证码出错!";
         });
       this.timer = setInterval(() => {
@@ -193,14 +204,15 @@ export default Vue.extend({
       }
       if (this.disabled == true) return;
       this.disabled = true;
-      Axios.post("/user/phone/regUpdate", {
-        account: this.account,
-        pwd: this.password,
-      })
+      remote
+        .post("/user/phone/regUpdate", {
+          account: this.account,
+          pwd: this.password,
+        })
         .then((r) => {
           this.disabled = false;
-          if (r && r.data && r.data.success == true) {
-            if (r.data.user) user.saveCache(r.data.user);
+          if (r && r.success == true) {
+            if (r.user) user.saveCache(r.user);
             location.href = "/designer";
           }
         })
