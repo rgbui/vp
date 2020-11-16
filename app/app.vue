@@ -1,14 +1,14 @@
 <template>
   <div class="viewparse">
-    <router-view></router-view>
     <div class="viewparse-load" v-if="loading == true">加载中</div>
+    <router-view v-else></router-view>
   </div>
 </template>
 <script lang="ts">
 import Vue from "vue";
 export default Vue.extend({
-  props:{
-    loading:{type:Boolean,default:false}
+  props: {
+    loading: { type: Boolean, default: false },
   },
 });
 </script>
