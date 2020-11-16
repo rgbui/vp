@@ -14,7 +14,7 @@ var mode = process.argv.findIndex(x => x.indexOf('development') > -1) > -1 ? "de
 const PUB_HOST = 'http://test-api.viewparse.com';
 const DEV_HOST = 'http://test-api.viewparse.com';
 var outputDir = path.join(__dirname, "../../vp-serverless/vp-org/site");
-
+let publicPath = `http://test.viewparse.com/`;
 module.exports = {
     mode: 'production',
     entry: "./app/main.ts",
@@ -108,7 +108,8 @@ module.exports = {
             hash: true,
             inject: 'body',
             templateParameters: {
-                mode:'prod'
+                mode:'prod',
+                publicPath
             }
         }),
         new webpack.DefinePlugin({
