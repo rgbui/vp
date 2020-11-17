@@ -49,7 +49,8 @@ export default Vue.extend({
     create() {
       this.error = "";
       if (this.name) {
-        remote.post("/create/workspace", { name: this.name })
+        remote
+          .post("/create/workspace", { name: this.name })
           .then((r) => {
             if (r && r.success == true) {
               var c = r.content;
