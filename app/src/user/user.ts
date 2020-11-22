@@ -1,7 +1,7 @@
 import Axios from "axios";
-import { logger } from "./logger";
-import { Events } from "./util/events";
-import { remote } from "./util/remote";
+import { logger } from "../../logger";
+import { Events } from "../../util/events";
+import { remote } from "../../util/remote";
 const LOCAL_USER_KEY = 'user_info';
 class User extends Events {
     private user: {

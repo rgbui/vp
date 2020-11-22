@@ -1,7 +1,7 @@
 
 
 import { logger } from "../../logger";
-import { user } from "../../user";
+import { user } from "../user/user";
 import { Events } from "../../util/events";
 import { remote } from "../../util/remote";
 import { util } from "../../util/util";
