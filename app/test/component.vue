@@ -359,7 +359,7 @@
         </vp-col>
       </vp-row>
       <vp-row label="分页">
-        <vp-col> <vp-pagination :total='50' :size='4'></vp-pagination></vp-col
+        <vp-col> <vp-pagination :total="50" :size="4"></vp-pagination></vp-col
       ></vp-row>
     </vp-panel>
   </div>
