@@ -353,13 +353,23 @@
           <vp-button @contextmenu.native="contextmenu">右键菜单</vp-button>
         </vp-col>
       </vp-row>
+      <vp-row label="日期:">
+        <vp-col span="4">
+          <vp-date></vp-date>
+        </vp-col>
+      </vp-row>
+      <vp-row label="分页">
+        <vp-col> <vp-pagination :total='50' :size='4'></vp-pagination></vp-col
+      ></vp-row>
     </vp-panel>
   </div>
 </template>
 <script lang="ts">
 import Vue, { PropType } from "vue";
 import { Contextmenu } from "../src/components/present/contextmenu.single";
+import pagination from "../src/components/present/pagination.vue";
 export default Vue.extend({
+  components: { pagination },
   computed: {
     dialoug() {
       return this.$refs.dialoug;

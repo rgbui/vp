@@ -24,6 +24,8 @@ import VpContextmenu from "./present/contextmenu.vue";
 import VpContextmenuBox from "./present/contextmenu.box.vue";
 import VpTree from "./present/tree.vue";
 import VpTreeBox from "./present/tree.box.vue";
+import VpDate from "./form/date.vue";
+import VpPagination from "./present/pagination.vue";
 
 Vue.component('VpButton', Button);
 Vue.component('VpPanel', VpPanel);
@@ -50,4 +52,6 @@ Vue.component('VpContextmenuBox', VpContextmenuBox);
 Vue.component('VpContextmenu', VpContextmenu);
 Vue.component('VpTree', VpTree);
 Vue.component('VpTreeBox', VpTreeBox);
+Vue.component('VpDate', VpDate);
+Vue.component(`VpPagination`, VpPagination);
 
