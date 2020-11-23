@@ -357,6 +357,12 @@
         <vp-col span="4">
           <vp-date></vp-date>
         </vp-col>
+        <vp-col span="4">
+          <vp-date mode="datetime"></vp-date>
+        </vp-col>
+        <vp-col span="4">
+          <vp-date mode="time"></vp-date>
+        </vp-col>
       </vp-row>
       <vp-row label="分页">
         <vp-col> <vp-pagination :total="50" :size="4"></vp-pagination></vp-col

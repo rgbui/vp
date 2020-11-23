@@ -7,6 +7,9 @@
       readonly
       @click="toggle"
     />
+    <vp-icon
+      :icon="mode == 'time' ? 'clock-o:font' : 'calendar:font'"
+    ></vp-icon>
     <div class="vp-date-drop" v-show="spread">
       <div class="vp-date-selector-year" v-if="selector == 'year'">
         <div class="vp-date-selector-year-head">
@@ -112,13 +115,46 @@
           >
         </div>
         <div class="vp-date-selector-date-footer">
+          <span v-if="mode == 'datetime'" @click="setSelector('time')"
+            >{{ pad(hour) }}:{{ pad(minute) }}:{{ pad(second) }}</span
+          >
           <a @click="setNow">此刻</a><a @click="setEmit(true)">确定</a>
         </div>
       </div>
       <div class="vp-date-selector-time" v-else-if="selector == 'time'">
-        <div class="vp-date-selector-time-hours"></div>
-        <div class="vp-date-selector-time-minutes"></div>
-        <div class="vp-date-selector-time-seconds"></div>
+        <div class="vp-date-selector-time-drop">
+          <div
+            ref="time_hour"
+            class="vp-date-selector-time-hours"
+            @scroll="scroll('hour', $event)"
+          >
+            <a v-for="n in 24" :class="{ hover: hour == n }" :key="n">{{
+              pad(n - 1)
+            }}</a>
+          </div>
+          <div
+            ref="time_minute"
+            class="vp-date-selector-time-minutes"
+            @scroll="scroll('minute', $event)"
+          >
+            <a v-for="n in 60" :key="n" :class="{ hover: minute == n - 1 }">{{
+              pad(n - 1)
+            }}</a>
+          </div>
+          <div
+            ref="time_second"
+            class="vp-date-selector-time-seconds"
+            @scroll="scroll('second', $event)"
+          >
+            <a v-for="n in 60" :key="n" :class="{ hover: second == n - 1 }">{{
+              pad(n - 1)
+            }}</a>
+          </div>
+        </div>
+
+        <div class="vp-date-selector-time-footer">
+          <a @click="setTimeEmit()">确定</a>
+        </div>
       </div>
     </div>
   </div>
@@ -130,6 +166,12 @@ export default Vue.extend({
     disabled: { type: Boolean, default: false },
     value: { type: Object },
     placeholder: { type: String, default: "" },
+    /***
+     * @param mode date
+     * @param mode datetime
+     * @param mode time
+     */
+    mode: { type: String, default: "date" },
   },
   computed: {
     weeks() {
@@ -201,17 +243,15 @@ export default Vue.extend({
   },
   data() {
     var dateText = "";
+    var isShowText = false;
     if (!this.value) this.$set(this, "value", new Date());
-    else
-      dateText = `${this.value.getFullYear()}-${
-        this.value.getMonth() + 1
-      }-${this.value.getDate()}`;
+    else isShowText = true;
     var year = this.value.getFullYear();
-    return {
+    var object = {
       dateText,
       isFocus: false,
       spread: false,
-      selector: "day",
+      selector: this.mode == "time" ? "time" : "day",
       year: year,
       day: (this.value as Date).getDate(),
       month: (this.value as Date).getMonth() + 1,
@@ -221,6 +261,16 @@ export default Vue.extend({
       fromYear: Math.floor(year % 10 == 0 ? (year - 1) / 10 : year / 10) * 10,
       toYear: Math.ceil(year / 10) * 10,
     };
+    if (isShowText == true) {
+      if (this.mode == "date")
+        object.dateText = `${object.year}-${object.month}-${object.day}`;
+      else if (this.mode == "datetime") {
+        object.dateText = `${object.year}-${object.month}-${object.day} ${object.hour}:${object.minute}:${object.second}`;
+      } else if (this.mode == "time") {
+        object.dateText = `${object.hour}:${object.minute}:${object.second}`;
+      }
+    }
+    return object;
   },
   methods: {
     focus() {
@@ -238,6 +288,11 @@ export default Vue.extend({
     },
     toggle(event: MouseEvent) {
       this.spread = this.spread ? false : true;
+      if (this.spread == true && this.selector == "time") {
+        Vue.nextTick(() => {
+          this.setScroll();
+        });
+      }
     },
     setYear(year) {
       this.year = year;
@@ -258,6 +313,11 @@ export default Vue.extend({
     },
     setSelector(selector) {
       this.selector = selector;
+      if (this.selector == "time") {
+        Vue.nextTick(() => {
+          this.setScroll();
+        });
+      }
     },
     setNow() {
       var now = new Date();
@@ -271,7 +331,6 @@ export default Vue.extend({
       this.setEmit();
     },
     setEmit(force?: boolean) {
-      
       var date = new Date();
       date.setFullYear(this.year);
       date.setMonth(this.month - 1);
@@ -284,8 +343,56 @@ export default Vue.extend({
         this.spread = false;
       }
     },
+    setTimeEmit() {
+      if (this.mode == "time") {
+        this.setEmit(true);
+      } else {
+        this.selector = "day";
+      }
+    },
     showDateText() {
-      this.dateText = `${this.year}-${this.month}-${this.day}`;
+      if (this.mode == "date")
+        this.dateText = `${this.year}-${this.month}-${this.day}`;
+      else if (this.mode == "datetime") {
+        this.dateText = `${this.year}-${this.month}-${this.day} ${this.hour}:${this.minute}:${this.second}`;
+      } else if (this.mode == "time") {
+        this.dateText = `${this.pad(this.hour)}:${this.pad(
+          this.minute
+        )}:${this.pad(this.second)}`;
+      }
+    },
+    pad(n) {
+      return n.toString().length == 1 ? "0" + n : n;
+    },
+    scroll(name: string, event: MouseEvent) {
+      var ele = event.target as HTMLDivElement;
+      var top = ele.scrollTop;
+      top += 10;
+      if (name == "hour") {
+        var n = Math.ceil(top / 20) - 1;
+        this.hour = n;
+      } else if (name == "minute") {
+        var n = Math.ceil(top / 20) - 1;
+        this.minute = n;
+      } else if (name == "second") {
+        var n = Math.ceil(top / 20) - 1;
+        this.second = n;
+      }
+      this.showDateText();
+      this.setEmit();
+    },
+    setScroll() {
+      if (this.$refs["time_hour"]) {
+        (this.$refs["time_hour"] as HTMLDivElement).scrollTop = this.hour * 20;
+      }
+      if (this.$refs["time_minute"]) {
+        (this.$refs["time_minute"] as HTMLDivElement).scrollTop =
+          this.minute * 20;
+      }
+      if (this.$refs["time_second"]) {
+        (this.$refs["time_second"] as HTMLDivElement).scrollTop =
+          this.second * 20;
+      }
     },
   },
 });
@@ -307,6 +414,18 @@ export default Vue.extend({
     &::-webkit-input-placeholder {
       color: @text-color-disabled;
     }
+  }
+  > .vp-icon {
+    color: @text-color-disabled;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    width: @height;
+    height: @height;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   &-drop {
     left: 0px;
@@ -332,6 +451,7 @@ export default Vue.extend({
             display: inline-flex;
             justify-content: center;
             align-items: center;
+            cursor: pointer;
           }
           &-title {
             flex-grow: 1;
@@ -372,6 +492,7 @@ export default Vue.extend({
             display: inline-flex;
             justify-content: center;
             align-items: center;
+            cursor: pointer;
           }
           &-title {
             flex-grow: 1;
@@ -412,6 +533,7 @@ export default Vue.extend({
             display: inline-flex;
             justify-content: center;
             align-items: center;
+            cursor: pointer;
           }
           &-title {
             flex-grow: 1;
@@ -471,9 +593,76 @@ export default Vue.extend({
               cursor: pointer;
             }
           }
+          span {
+            float: left;
+            margin-left: @gap;
+            cursor: pointer;
+          }
         }
       }
       &-time {
+        &-drop {
+          margin: @gap 0px;
+          display: flex;
+          align-items: flex-start;
+          justify-content: flex-start;
+          position: relative;
+          &::after {
+            content: "\20";
+            position: absolute;
+            top: 50%;
+            left: 0px;
+            right: 0px;
+            height: 20px;
+            margin-top: -11px;
+            border: 1px solid @grey-border-2x;
+            border-left-color: transparent;
+            border-right-color: transparent;
+          }
+          > * {
+            width: 60px;
+            height: 180px;
+            overflow-x: hidden;
+            box-sizing: border-box;
+            overflow-y: auto;
+            padding-top: 80px;
+            padding-bottom: 80px;
+            a {
+              display: block;
+              text-align: center;
+              height: 20px;
+              line-height: 20px;
+              &.hover {
+                font-weight: bold;
+              }
+            }
+          }
+        }
+        &-hours {
+        }
+        &-minutes {
+        }
+        &-seconds {
+        }
+        &-footer {
+          display: flex;
+          height: 30px;
+          justify-content: flex-end;
+          align-items: center;
+          a {
+            display: inline-block;
+            margin-left: @gap;
+            height: 24px;
+            line-height: 24px;
+            padding: 0px @gap;
+            border-radius: @radius;
+            &:last-child {
+              background-color: @primary-color;
+              color: #fff;
+              cursor: pointer;
+            }
+          }
+        }
       }
     }
   }
