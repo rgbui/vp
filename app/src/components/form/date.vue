@@ -128,27 +128,39 @@
             class="vp-date-selector-time-hours"
             @scroll="scroll('hour', $event)"
           >
-            <a v-for="n in 24" :class="{ hover: hour == n }" :key="n">{{
-              pad(n - 1)
-            }}</a>
+            <a
+              v-for="n in 24"
+              @click="setHour(n - 1)"
+              :class="{ hover: hour == n - 1 }"
+              :key="n"
+              >{{ pad(n - 1) }}</a
+            >
           </div>
           <div
             ref="time_minute"
             class="vp-date-selector-time-minutes"
             @scroll="scroll('minute', $event)"
           >
-            <a v-for="n in 60" :key="n" :class="{ hover: minute == n - 1 }">{{
-              pad(n - 1)
-            }}</a>
+            <a
+              v-for="n in 60"
+              @click="setMinute(n - 1)"
+              :key="n"
+              :class="{ hover: minute == n - 1 }"
+              >{{ pad(n - 1) }}</a
+            >
           </div>
           <div
             ref="time_second"
             class="vp-date-selector-time-seconds"
             @scroll="scroll('second', $event)"
           >
-            <a v-for="n in 60" :key="n" :class="{ hover: second == n - 1 }">{{
-              pad(n - 1)
-            }}</a>
+            <a
+              v-for="n in 60"
+              :key="n"
+              @click="setSecond(n - 1)"
+              :class="{ hover: second == n - 1 }"
+              >{{ pad(n - 1) }}</a
+            >
           </div>
         </div>
 
@@ -381,6 +393,18 @@ export default Vue.extend({
       this.showDateText();
       this.setEmit();
     },
+    setHour(hour) {
+      this.hour = hour;
+      this.setScroll();
+    },
+    setMinute(minute: number) {
+      this.minute = minute;
+      this.setScroll();
+    },
+    setSecond(second: number) {
+      this.second = second;
+      this.setScroll();
+    },
     setScroll() {
       if (this.$refs["time_hour"]) {
         (this.$refs["time_hour"] as HTMLDivElement).scrollTop = this.hour * 20;
@@ -576,6 +600,7 @@ export default Vue.extend({
           height: 30px;
           justify-content: flex-end;
           align-items: center;
+          position: relative;
           a {
             display: inline-block;
             margin-left: @gap;
@@ -594,7 +619,11 @@ export default Vue.extend({
             }
           }
           span {
-            float: left;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            height: 30px;
+            line-height: 30px;
             margin-left: @gap;
             cursor: pointer;
           }
@@ -618,6 +647,7 @@ export default Vue.extend({
             border: 1px solid @grey-border-2x;
             border-left-color: transparent;
             border-right-color: transparent;
+            pointer-events: none;
           }
           > * {
             width: 60px;
@@ -637,12 +667,6 @@ export default Vue.extend({
               }
             }
           }
-        }
-        &-hours {
-        }
-        &-minutes {
-        }
-        &-seconds {
         }
         &-footer {
           display: flex;
