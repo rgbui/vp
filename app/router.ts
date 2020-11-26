@@ -43,7 +43,12 @@ if (MODE == 'dev') {
             path: '/test/component',
             component: () => import('./test/component.vue')
         }
-    )
+    );
+    routes.push({
+        name: 'editor',
+        path: '/editor',
+        component: () => import('./test/editor.vue')
+    })
 }
 var router = new VueRouter({
     mode: 'history',
