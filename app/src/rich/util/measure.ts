@@ -1,7 +1,6 @@
 import { util } from "../../../util/util";
 
-
-let __g: CanvasRenderingContext2D
+let __g: CanvasRenderingContext2D;
 /**
  * 测量字体的宽度
  * https://www.w3school.com.cn/tags/canvas_font.asp
