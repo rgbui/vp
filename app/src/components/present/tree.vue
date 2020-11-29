@@ -45,10 +45,25 @@ export default Vue.extend({
     validInput: {
       type: Function,
     },
+    getItemOperators: {
+      type: Function,
+    },
+    noChildsTip: {
+      type: String,
+      default: "没有页面",
+    },
   },
   methods: {
+    load(childs) {
+      this.$set(this, "childs", childs);
+    },
     onEdit(node) {
       this.editId = node.id;
+      Vue.nextTick(() => {
+        ((this.$el as HTMLDivElement).querySelector(
+          "input"
+        ) as HTMLInputElement).focus();
+      });
     },
     onFocus(node) {
       this.focusIds = [node.id];
@@ -112,7 +127,7 @@ export default Vue.extend({
       this.$emit("move", { from: dragNode, to: toNode, pos });
     },
     create(newNode, toNode, pos: "prev" | "next" | "append") {
-      if (typeof newNode == "undefined") newNode = util.guid();
+      if (typeof newNode.id == "undefined") newNode.id = util.guid();
       if (pos == "prev" || pos == "next") {
         var toPa = this.findParent(toNode);
         var toAt = this.findIndex(toNode);
@@ -126,11 +141,13 @@ export default Vue.extend({
       } else {
         if (!Array.isArray(toNode.childs)) this.$set(toNode, "childs", []);
         toNode.childs.push(newNode);
+        toNode.spread = true;
         this.history("create", {
           data: util.clone(newNode),
           to: { parentId: toNode.id, at: toNode.childs.length },
         });
       }
+      return newNode;
     },
     update(node, newNodeInfo) {
       var oldValue: Record<string, any> = {};

@@ -119,7 +119,8 @@ module.exports = {
             hash: true,
             inject: 'body',
             templateParameters: {
-                mode:'dev'
+                mode:'dev',
+                publicPath
             }
         }),
         new webpack.DefinePlugin({

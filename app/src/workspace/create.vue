@@ -10,7 +10,7 @@
           <vp-text type="error">{{ error }}</vp-text>
         </vp-col>
       </vp-row>
-      <vp-row>
+      <vp-row label=" ">
         <vp-col>
           <vp-button size="small" @click.native="create">创建</vp-button>
           <vp-button size="small" @click.native="close" type="grey"
@@ -22,7 +22,10 @@
   </vp-dialoug>
 </template>
 <script lang="ts">
+import Axios from "axios";
+import { user } from "../user/user";
 import Vue from "vue";
+import { remote } from "../../util/remote";
 export default Vue.extend({
   data() {
     return {
@@ -35,6 +38,9 @@ export default Vue.extend({
       return this.$refs.dialoug;
     },
   },
+  mounted() {
+    this.dialoug.open();
+  },
   methods: {
     input() {
       if (this.name) this.error = "";
@@ -43,7 +49,18 @@ export default Vue.extend({
     create() {
       this.error = "";
       if (this.name) {
-        this.$emit("create", this.name);
+        remote
+          .post("/create/workspace", { name: this.name })
+          .then((r) => {
+            if (r && r.success == true) {
+              var c = r.content;
+              user.saveCache({ settings: { workspace_id: c.id } });
+              this.$router.push({ name: "designer" });
+            }
+          })
+          .catch((err) => {
+            this.error = "网络错误";
+          });
       } else {
         this.error = "名称不能为空";
       }

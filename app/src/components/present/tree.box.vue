@@ -11,13 +11,14 @@
         @mouseenter="mouseenter(item, $event)"
         @mouseleave="mouseleave(item, $event)"
       >
-        <i @click="clickSpread(item, $event)">
+        <i class="vp-tree-item-spread" @click="clickSpread(item, $event)">
           <vp-icon
             :icon="item.spread == true ? 'angle-down:font' : 'angle-right:font'"
-            v-if="item.childs && item.childs.length > 0"
           ></vp-icon>
         </i>
-        <vp-icon :icon="item.icon" v-if="item.icon ? true : false"></vp-icon>
+        <i class="vp-tree-item-icon">
+          <vp-icon :icon="item.icon ? item.icon : 'file:font'"></vp-icon>
+        </i>
         <span v-if="tree.editId != item.id">{{ item.text }}</span>
         <input
           v-else
@@ -25,13 +26,14 @@
           :value="item.text"
           @input="input(item, $event)"
           @keydown.enter="enter(item, $event)"
+          @blur="blur(item, $event)"
         />
         <div class="vp-tree-item-operators">
           <vp-icon
             v-for="(op, at) in getOperators(item)"
             :key="at"
             :icon="op.icon"
-            @click.native.stop="operatorClick(item, op)"
+            @click.native.stop="operatorClick(item, op, $event)"
           ></vp-icon>
         </div>
         <div class="vp-tree-item-message" v-if="tree.editId == item.id">
@@ -39,10 +41,17 @@
         </div>
       </div>
       <vp-tree-box
-        v-if="item.spread == true"
+        v-if="item.spread == true && item.childs && item.childs.length > 0"
         :childs="item.childs"
         :deep="deep + 1"
       ></vp-tree-box>
+      <div
+        v-if="item.spread == true && !(item.childs && item.childs.length > 0)"
+        class="vp-tree-item-no-childs"
+        :style="getItemNoChildsStyle(item)"
+      >
+        {{ tree.noChildsTip }}
+      </div>
     </li>
   </ol>
 </template>
@@ -76,7 +85,12 @@ export default Vue.extend({
     },
     getItemStyle(item) {
       var style: Record<string, any> = {};
-      style.paddingLeft = this.deep * 20 + "px";
+      style.paddingLeft = 10 + this.deep * 20 + "px";
+      return style;
+    },
+    getItemNoChildsStyle(item) {
+      var style: Record<string, any> = {};
+      style.paddingLeft = 10 + 16 + this.deep * 20 + "px";
       return style;
     },
     getOperators(item) {
@@ -88,8 +102,8 @@ export default Vue.extend({
       }
       return [];
     },
-    operatorClick(item, op) {
-      this.tree.$emit("operatorClick", { item, operaror: op });
+    operatorClick(item, op, event) {
+      this.tree.$emit("operatorClick", { item, operator: op, event });
     },
     input(item, event: MouseEvent) {
       if (typeof this.tree.validInput == "function") {
@@ -122,6 +136,9 @@ export default Vue.extend({
       }
       item.text = newName;
       this.tree.editId = "";
+    },
+    blur(item, event: FocusEvent) {
+      this.enter(item, event);
     },
     contextmenu(item, event: MouseEvent) {
       this.tree.$emit("contextmenu", { item, event });
@@ -169,7 +186,7 @@ export default Vue.extend({
     mouseenter(item, event: MouseEvent) {
       if (this.tree.dragId) this.tree.dragOverId = item.id;
       var itemDiv = event.currentTarget as HTMLDivElement;
-      var span = itemDiv.querySelector(">span");
+      var span = itemDiv.querySelector("span");
       var sb = span.getBoundingClientRect();
       if (event.pageY < sb.top + sb.height / 3) {
         this.tree.dragOverPos = "prev";
@@ -187,4 +204,65 @@ export default Vue.extend({
 });
 </script>
 <style lang="less">
+.vp-tree-item {
+  height: 30px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0px @gap;
+  position: relative;
+  &-spread {
+    width: 16px;
+    height: 16px;
+    color: @text-color-2x;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+  &-icon {
+    width: 16px;
+    height: 16px;
+    color: @text-color-2x;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+  > span {
+    cursor: pointer;
+  }
+  &-operators {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    visibility: hidden;
+    .vp-icon {
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      color: @text-color-disabled;
+      border-radius: @radius;
+      &:hover {
+        background-color: @grey-background;
+      }
+    }
+  }
+  &-no-childs {
+    color: @text-color-disabled;
+  }
+  &:hover {
+    background-color: @grey-background-2x;
+    .vp-tree-item-operators {
+      visibility: visible;
+    }
+  }
+}
 </style>
