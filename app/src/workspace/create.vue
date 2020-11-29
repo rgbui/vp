@@ -23,7 +23,7 @@
 </template>
 <script lang="ts">
 import Axios from "axios";
-import { user } from "../../user";
+import { user } from "../user/user";
 import Vue from "vue";
 import { remote } from "../../util/remote";
 export default Vue.extend({

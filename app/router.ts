@@ -12,8 +12,8 @@ Vue.use(VueRouter);
 let routes: any[] = [
     {
         name: 'index',
-        path: "/",
-        component: index
+        path: '/',
+        component: () => import('./test/editor.vue')
     },
     {
         name: 'designer',

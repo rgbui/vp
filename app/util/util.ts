@@ -83,4 +83,16 @@ export var util = {
         }
         return equal(a, b);
     },
+    getStyle(node: HTMLElement, attr: string) {
+        if (typeof getComputedStyle != 'undefined') {
+            var value = getComputedStyle(node, null)[attr];
+            return value;
+        } else if (typeof (node as any).currentStyle != 'undefined') {
+            if (attr == 'opacity') { //兼容不透明度
+                return Number((node as any).currentStyle.getAttribute('filter').match(/(?:opacity[=:])(\d+)/)[1]);
+            } else {
+                return (node as any).currentStyle.getAttribute(attr);
+            }
+        }
+    }
 }

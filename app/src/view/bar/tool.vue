@@ -13,7 +13,7 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
-import { user } from "../../../user";
+import { user } from "../../user/user";
 export default Vue.extend({
   data() {
     return {
