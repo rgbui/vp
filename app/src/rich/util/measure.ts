@@ -14,6 +14,7 @@ export function measureTextWidth(word: string, fontStyle: {
     lineHeight: string,
     fontFamily: string,
 }) {
+    if(word=='')return 0;
     if (!__g) {
         var canvas = document.createElement('canvas')//首先创建一个canvas标签
         __g = canvas.getContext("2d");//把canvas的画笔给调出来

@@ -1,6 +1,6 @@
 
 import { BlockType } from "../block/block.type";
-import { VcText } from "./text/text.express";
+import { VcRowText, VcText } from "./text/text.express";
 export interface VcProp {
     name: string
     default?: any
@@ -15,3 +15,4 @@ export interface VcExpress {
 }
 export let ExpressList: VcExpress[] = [];
 ExpressList.push(Object.freeze(VcText));
+ExpressList.push(Object.freeze(VcRowText));

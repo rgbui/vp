@@ -6,3 +6,8 @@ export var VcText: VcExpress = {
     propNames: ['text'],
     modePropNames: []
 }
+export var VcRowText: VcExpress = {
+    type: BlockType.rowText,
+    propNames: ['text', 'height'],
+    modePropNames: []
+}

@@ -36,6 +36,7 @@ export class Block {
             blockInfo.modeId = modeId;
             blockInfo.modes = [{ id: modeId }];
         }
+        if (typeof blockInfo.id == 'undefined') blockInfo.id = util.guid();
         for (let m in blockInfo) {
             if (m == 'modes' || m == 'props') continue;
             else this[m] = blockInfo[m];
@@ -56,7 +57,13 @@ export class Block {
         }
         if (typeof this.type != 'undefined') {
             var exp = ExpressList.find(x => x.type == this.type);
+            if (!exp) {
+                throw new Error('not found block type express:' + BlockType[this.type])
+            }
             this.express = exp;
+        }
+        else {
+            throw new Error('the block type is not undefined');
         }
     }
     private willCreate() {
@@ -79,16 +86,19 @@ export class Block {
         else {
             editor.append(block, options.at);
         }
-        block.type = BlockType.text;
         return block;
     }
-    updateText(text: string, offset: number) {
+    getText(offset: number, to: number) {
+        var pro = this.findPro('text');
+        return pro.value.slice(offset, to);
+    }
+    updateText(text: string, offset: number, offsetCount: number) {
         var pro = this.findPro('text');
         if (!pro) {
             pro = this.createPro({ text: text }).first();
         }
         else if (pro) {
-            pro.value = pro.value.slice(0, offset) + text + pro.value.slice(offset + text.length);
+            pro.value = (pro.value as string).slice(0, offset) + text + pro.value.slice(offset + offsetCount);
         }
     }
     findPro(predict: string | ((pro: Prop) => boolean)) {

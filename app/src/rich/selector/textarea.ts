@@ -2,6 +2,7 @@ import { Events } from "../../../util/events";
 import { Block } from "../block/block";
 import { BlockType } from "../block/block.type";
 import { Editor } from "../editor";
+import { getEleFontStyle } from "../util/measure";
 
 export class Textarea extends Events {
     private vm: Vue;
@@ -30,10 +31,13 @@ export class Textarea extends Events {
     }
     keyup(event: KeyboardEvent) {
         if (event.key == 'Backspace' || event.key == 'Delete') {
-            if (this.textarea.value) {
+
+            if (this.textarea.value || !this.textarea.value && this.editor.cursor.offsetCount > 0) {
                 //正常的编辑
                 if (this.editor.cursor.block) {
-                    this.editor.cursor.block.updateText(this.textarea.value, this.editor.cursor.offset);
+                    this.editor.cursor.block.updateText(this.textarea.value, this.editor.cursor.offset, this.editor.cursor.offsetCount);
+                    this.editor.cursor.offsetCount = this.textarea.value.length;
+                    this.editor.cursor.keydownPosition(this.textarea.value);
                     this.editor.render();
                 }
                 else throw 'the cursor block is not found'
@@ -51,12 +55,26 @@ export class Textarea extends Events {
         else {
             if (!this.editor.cursor.block) {
                 var newBlock = Block.createBlock(this.editor,
-                    { type: BlockType.text, props: [{ name: 'text', val: this.textarea.value }] }
+                    {
+                        type: BlockType.rowText, props: [
+                            { name: 'text', val: this.textarea.value },
+                            { name: 'height', val: 20 }
+                        ]
+                    }
                 );
                 this.editor.cursor.block = newBlock;
                 this.editor.cursor.offset = 0;
+                this.editor.cursor.h = 20;
+                this.editor.cursor.x = 0;
+                this.editor.cursor.y = 0;
+                this.editor.cursor.offsetCount = 1;
+                this.editor.cursor.fontStyle = getEleFontStyle(this.editor.vm.$el);
             }
-            this.editor.cursor.block.updateText(this.textarea.value, this.editor.cursor.offset);
+            else {
+                this.editor.cursor.block.updateText(this.textarea.value, this.editor.cursor.offset, this.editor.cursor.offsetCount);
+                this.editor.cursor.offsetCount = this.textarea.value.length;
+            }
+            this.editor.cursor.keydownPosition(this.textarea.value);
             this.editor.render();
         }
     }

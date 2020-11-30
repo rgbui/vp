@@ -1,5 +1,5 @@
 <template>
-  <span data-name="ve-text">{{ text }}<slot></slot></span>
+  <span data-name="ve-text">{{ text }}</span>
 </template>
 <script lang="ts">
 import Vue from "vue";
