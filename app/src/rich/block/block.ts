@@ -4,12 +4,12 @@ import { Editor } from "../editor";
 import { Prop } from "./prop";
 import { Mode } from "./mode";
 import { ExpressList, VcExpress } from "../components/express";
+import { Events } from "../../../util/events";
 
-export class Block {
+export class Block extends Events {
     id: string;
     private editor: Editor;
     express: VcExpress;
-    ele: HTMLElement;
     type: BlockType;
     props: Prop[] = [];
     modes: Mode[] = [];
@@ -20,6 +20,7 @@ export class Block {
         return this.modes.find(x => x.id == this.modeId);
     }
     constructor(data: { blockInfo?: Record<string, any>, editor: Editor, parent?: Block }) {
+        super();
         this.editor = data.editor;
         this.parent = data.parent;
         this.willInit(data.blockInfo);
@@ -88,18 +89,16 @@ export class Block {
         }
         return block;
     }
-    getText(offset: number, to: number) {
+    getText() {
         var pro = this.findPro('text');
-        return pro.value.slice(offset, to);
+        return pro.value;
     }
-    updateText(text: string, offset: number, offsetCount: number) {
+    setText(text: string) {
         var pro = this.findPro('text');
         if (!pro) {
-            pro = this.createPro({ text: text }).first();
+            this.createPro({ text: text })
         }
-        else if (pro) {
-            pro.value = (pro.value as string).slice(0, offset) + text + pro.value.slice(offset + offsetCount);
-        }
+        else pro.value = text;
     }
     findPro(predict: string | ((pro: Prop) => boolean)) {
         if (typeof predict == 'string') {
@@ -157,6 +156,9 @@ export class Block {
         return pros;
     }
     private vm;
+    get ele(): HTMLElement {
+        return this.vm.$el as HTMLElement;
+    }
     get viewData() {
         var self = this;
         var ref = {};

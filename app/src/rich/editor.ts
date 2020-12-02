@@ -1,16 +1,16 @@
 import { Events } from "../../util/events";
 import { Block } from "./block/block";
-import { Cursor } from "./selector/cursor";
+import { Cursor, CursorBox } from "./selector/cursor";
 import { Selection } from "./selector/selection";
 import Vue from "vue";
 import EditorView from "./vue/view.vue";
-import { EditorMousedownEvent } from "./decare.type";
+
 import { Textarea } from "./selector/textarea";
 import { Selector } from "./selector/selector";
 export class Editor extends Events {
 
     private blocks: Block[] = [];
-    cursor: Cursor;
+    cursorBox: CursorBox;
     selection: Selection;
     textarea: Textarea;
     selector: Selector;
@@ -38,7 +38,7 @@ export class Editor extends Events {
                 self.vm = this.editorView;
                 self.textarea = new Textarea(self.vm.textarea, self);
                 self.selection = new Selection(self.vm.selection, self);
-                self.cursor = new Cursor(self.vm.cursor, self);
+                self.cursorBox = new CursorBox(self.vm.cursor, self);
                 self.selector = new Selector(self.vm.selector, self);
                 var ele = self.vm.$el as HTMLElement;
                 ele.addEventListener('mousedown', self.mousedown.bind(self));
@@ -48,7 +48,7 @@ export class Editor extends Events {
     }
     blur() {
         this.isFocus = false;
-        this.cursor.close();
+        this.cursorBox.close();
         this.emit("blur");
     }
     private isFocus: boolean = false;
@@ -61,7 +61,7 @@ export class Editor extends Events {
         }
         this.textarea.focus();
         this.isFocus = true;
-        this.cursor.open();
+        this.cursorBox.open();
         this.emit("focus");
     }
     /**
@@ -80,26 +80,16 @@ export class Editor extends Events {
         }
         var component = componentEle ? (componentEle as any).ref : undefined;
         var block = component ? component.block : undefined;
-        var ev = {
-            event,
-            block,
-            component,
-            target: ele,
-            componentEle,
-            slotEle,
-            slotName: slotEle ? slotEle.getAttribute("data-slot") : undefined,
-        };
-        this.textarea.textarea.value = '';
-        if (!ev.block) {
-            this.cursor.block = null;
+        var slotName = slotEle ? slotEle.getAttribute("data-slot") : undefined;
+        if (!block) {
+            //这里需要 有可能点在当前行文字左右空白处
         }
-        if (!this.cursor.block) {
-            /**
-             * 有可能点在当前行文字左右空白处
-             * 还有就是可能点在末尾处理，这里自动创建一个空白处的编辑输入范围
-             */
+        if (block) {
+            var cursor = new Cursor(ele, block, slotName);
+            cursor.mousedown(event);
+            this.cursorBox.focus(cursor);
         }
-        this.cursor.postion(ev);
+        else this.cursorBox.focus();
     }
     mouseup(event: MouseEvent) {
         this.focus();

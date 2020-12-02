@@ -7,6 +7,8 @@ export var mixins = {
     },
     mounted() {
         this.$el["ref"] = this;
+        this.block.vm = this;
+        this.block.emit('mounted');
     },
     props: {
         rf: { type: Object }

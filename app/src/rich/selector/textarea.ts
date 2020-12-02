@@ -3,6 +3,7 @@ import { Block } from "../block/block";
 import { BlockType } from "../block/block.type";
 import { Editor } from "../editor";
 import { getEleFontStyle } from "../util/measure";
+import { Cursor } from "./cursor";
 
 export class Textarea extends Events {
     private vm: Vue;
@@ -31,29 +32,24 @@ export class Textarea extends Events {
     }
     keyup(event: KeyboardEvent) {
         if (event.key == 'Backspace' || event.key == 'Delete') {
-
-            if (this.textarea.value || !this.textarea.value && this.editor.cursor.offsetCount > 0) {
-                //正常的编辑
-                if (this.editor.cursor.block) {
-                    this.editor.cursor.block.updateText(this.textarea.value, this.editor.cursor.offset, this.editor.cursor.offsetCount);
-                    this.editor.cursor.offsetCount = this.textarea.value.length;
-                    this.editor.cursor.keydownPosition(this.textarea.value);
-                    this.editor.render();
-                }
-                else throw 'the cursor block is not found'
+            if (this.textarea.value) {
+                this.editor.cursorBox.input(this.textarea.value);
             }
             else {
-                //删除下一个字符
+                //这里主要是判断当前的输入是否已同步至光标输入中，此时输入框是空的，但这是刚按下的，在按前可能还值
+                //如果按前本身就是空的，那说明用户是想回退删除文本
+                this.editor.cursorBox.back();
             }
         }
         else if (['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp'].includes(event.key)) {
-            this.editor.cursor.move(event.key as any);
+            this.editor.cursorBox.move(event.key as any);
         }
         else if (event.key == 'Enter') {
-
+            //聚焦到输入空白处
+            this.editor.cursorBox.focus();
         }
         else {
-            if (!this.editor.cursor.block) {
+            if (this.editor.cursorBox.isBlank) {
                 var newBlock = Block.createBlock(this.editor,
                     {
                         type: BlockType.rowText, props: [
@@ -62,20 +58,16 @@ export class Textarea extends Events {
                         ]
                     }
                 );
-                this.editor.cursor.block = newBlock;
-                this.editor.cursor.offset = 0;
-                this.editor.cursor.h = 20;
-                this.editor.cursor.x = 0;
-                this.editor.cursor.y = 0;
-                this.editor.cursor.offsetCount = 1;
-                this.editor.cursor.fontStyle = getEleFontStyle(this.editor.vm.$el);
+                newBlock.once('mounted', () => {
+                    var cursor = new Cursor(newBlock.ele, newBlock);
+                    this.editor.cursorBox.focus(cursor);
+                    this.editor.cursorBox.input(this.textarea.value);
+                })
+                this.editor.render();
             }
             else {
-                this.editor.cursor.block.updateText(this.textarea.value, this.editor.cursor.offset, this.editor.cursor.offsetCount);
-                this.editor.cursor.offsetCount = this.textarea.value.length;
+                this.editor.cursorBox.input(this.textarea.value);
             }
-            this.editor.cursor.keydownPosition(this.textarea.value);
-            this.editor.render();
         }
     }
     paster(event: ClipboardEvent) {
