@@ -16,8 +16,7 @@ export default Vue.extend({
       var style: Record<string, any> = {};
       style.top = this.top + "px";
       style.left = this.left + "px";
-      //style.width = "10px";
-      style.width='1px';
+      style.width = "1px";
       style.marginLeft = "-0.5px";
       style.height = this.height + "px";
       style.backgroundColor = this.color;

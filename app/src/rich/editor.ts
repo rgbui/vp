@@ -1,18 +1,13 @@
 import { Events } from "../../util/events";
 import { Block } from "./block/block";
-import { Cursor, CursorBox } from "./selector/cursor";
-import { Selection } from "./selector/selection";
+import { Cursor } from "./selector/cursor";
+
 import Vue from "vue";
 import EditorView from "./vue/view.vue";
-
-import { Textarea } from "./selector/textarea";
 import { Selector } from "./selector/selector";
 export class Editor extends Events {
-
     private blocks: Block[] = [];
-    cursorBox: CursorBox;
-    selection: Selection;
-    textarea: Textarea;
+
     selector: Selector;
     vm;
     constructor(el: HTMLElement, options: {
@@ -36,9 +31,6 @@ export class Editor extends Events {
             },
             mounted() {
                 self.vm = this.editorView;
-                self.textarea = new Textarea(self.vm.textarea, self);
-                self.selection = new Selection(self.vm.selection, self);
-                self.cursorBox = new CursorBox(self.vm.cursor, self);
                 self.selector = new Selector(self.vm.selector, self);
                 var ele = self.vm.$el as HTMLElement;
                 ele.addEventListener('mousedown', self.mousedown.bind(self));
@@ -48,21 +40,23 @@ export class Editor extends Events {
     }
     blur() {
         this.isFocus = false;
-        this.cursorBox.close();
+        // this.cursorView.close();
         this.emit("blur");
     }
     private isFocus: boolean = false;
     focus() {
-        if (document.activeElement && (this.vm.$el as HTMLElement).contains(document.activeElement)) {
-            if (document.activeElement !== this.textarea.textarea) {
-                this.textarea.focus();
-            }
-            return;
-        }
-        this.textarea.focus();
         this.isFocus = true;
-        this.cursorBox.open();
-        this.emit("focus");
+        this.emit('focus');
+        // if (document.activeElement && (this.vm.$el as HTMLElement).contains(document.activeElement)) {
+        //     if (document.activeElement !== this.textarea.textarea) {
+        //         this.textarea.focus();
+        //     }
+        //     return;
+        // }
+        // this.textarea.focus();
+        // this.isFocus = true;
+        // this.cursorView.open();
+        // this.emit("focus");
     }
     /**
      * 鼠标点击事件时，需要重新确认光标的位置，
@@ -71,7 +65,8 @@ export class Editor extends Events {
      * 
      */
     mousedown(event: MouseEvent) {
-        this.isFocus = true;
+        this.focus();
+        this.selector.selectBlockByContentMousedown(event);
         var ele = event.target as HTMLElement;
         var componentEle = ele.closest("[data-name]") as HTMLElement;
         var slotEle = ele.closest("[data-slot]") as HTMLElement;
@@ -81,23 +76,30 @@ export class Editor extends Events {
         var component = componentEle ? (componentEle as any).ref : undefined;
         var block = component ? component.block : undefined;
         var slotName = slotEle ? slotEle.getAttribute("data-slot") : undefined;
-        if (!block) {
-            //这里需要 有可能点在当前行文字左右空白处
-        }
-        if (block) {
-            var cursor = new Cursor(ele, block, slotName);
-            cursor.mousedown(event);
-            this.cursorBox.focus(cursor);
-        }
-        else this.cursorBox.focus();
+        // if (!block) {
+        //     //这里需要 有可能点在当前行文字左右空白处
+        // }
+        // if (block) {
+        //     var cursor = new Cursor(ele, block, slotName);
+        //     cursor.mousedown(event);
+        //     this.cursorView.focus(cursor);
+        // }
+        // else this.cursorView.focus();
     }
     mouseup(event: MouseEvent) {
-        this.focus();
+        /**
+         * 如果处于聚焦，但焦点没有处于textarea时，需要聚焦到textarea才能输入
+         */
+        if (this.isFocus == true && !this.selector.focusIsInTextearea)
+            this.selector.focusTextearea()
     }
     append(block: Block, at?: number) {
         this.blocks.insertAt(typeof at == 'number' ? at : this.blocks.length, block);
     }
     render() {
         this.vm.updateBlocks(this.blocks.map(b => b.viewData));
+    }
+    get ele(): HTMLElement {
+        return this.vm.$el as HTMLElement;
     }
 }

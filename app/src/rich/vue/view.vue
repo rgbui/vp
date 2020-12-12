@@ -1,8 +1,5 @@
 <template>
   <div class="editor-box" :style="style">
-    <editor-textarea ref="textarea"></editor-textarea>
-    <editor-cursor ref="cursor"></editor-cursor>
-    <editor-selection ref="selection"></editor-selection>
     <editor-selector ref="selector"></editor-selector>
     <div class="editor-box-content">
       <div
@@ -22,11 +19,7 @@
 </style>
 <script lang="ts">
 import Vue from "vue";
-import EditorTextarea from "./textarea.vue";
 import EditorSelector from "./selector.vue";
-import EditorCursor from "./cursor.vue";
-import EditorSelection from "./selection.vue";
-
 export default Vue.extend({
   props: {
     width: { type: Number, default: 0 },
@@ -41,10 +34,7 @@ export default Vue.extend({
     };
   },
   components: {
-    EditorCursor,
-    EditorSelection,
     EditorSelector,
-    EditorTextarea,
   },
   computed: {
     style() {
@@ -53,17 +43,8 @@ export default Vue.extend({
       style.height = this.height + "px";
       return style;
     },
-    textarea() {
-      return this.$refs.textarea;
-    },
     selector() {
       return this.$refs.selector;
-    },
-    cursor() {
-      return this.$refs.cursor;
-    },
-    selection() {
-      return this.$refs.selection;
     },
   },
   methods: {
